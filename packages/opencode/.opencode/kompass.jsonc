@@ -25,6 +25,9 @@
     "learn": {
       "enabled": true
     },
+    "merge": {
+      "enabled": true
+    },
     "pr/create": {
       "enabled": true
     },
@@ -78,6 +81,9 @@
   },
   "tools": {
     "changes_load": {
+      "enabled": true
+    },
+    "session_command": {
       "enabled": true
     },
     "pr_load": {

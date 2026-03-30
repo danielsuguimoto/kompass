@@ -4,7 +4,7 @@ Implement a ticket by orchestrating development, branching, commit-and-push, and
 
 ## Additional Context
 
-Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the delegated `/dev`, `/branch`, `/commit-and-push`, and `/pr/create` steps.
+Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the dispatched `/dev`, `/branch`, `/commit-and-push`, and `/pr/create` steps.
 
 ## Workflow
 
@@ -31,27 +31,27 @@ $ARGUMENTS
 
 ### Delegate Implementation
 
-- Before delegating, send the exact dispatch block below
+- Before continuing, send the exact `session_command` block below through `session_command`
 
-<dispatch agent="worker">
+<session_command agent="worker">
 /dev
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
 - Store the result as `<implementation-result>`
 - If `<implementation-result>` is blocked or incomplete, STOP and report the implementation blocker
 
 ### Delegate Branch Creation
 
-- Before delegating, send the exact dispatch block below
+- Before continuing, send the exact `session_command` block below through `session_command`
 
-<dispatch agent="worker">
+<session_command agent="worker">
 /branch
 Branch naming guidance: <ticket-summary>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
 - Store the result as `<branch-result>`
 - If `<branch-result>` is blocked or incomplete, STOP and report the branch blocker
@@ -59,14 +59,14 @@ Additional context: <additional-context>
 
 ### Delegate Commit And Push
 
-- Before delegating, send the exact dispatch block below
+- Before continuing, send the exact `session_command` block below through `session_command`
 
-<dispatch agent="worker">
+<session_command agent="worker">
 /commit-and-push
 Ticket reference: <ticket-ref>
 Ticket summary: <ticket-summary>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
 - Store the result as `<commit-result>`
 - If `<commit-result>` is blocked or incomplete, STOP and report the commit or push blocker
@@ -74,14 +74,14 @@ Additional context: <additional-context>
 
 ### Delegate PR Creation
 
-- Before delegating, send the exact dispatch block below
+- Before continuing, send the exact `session_command` block below through `session_command`
 
-<dispatch agent="worker">
+<session_command agent="worker">
 /pr/create
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
 - Store the result as `<pr-result>`
 - If `<pr-result>` is blocked or incomplete, STOP and report the PR blocker

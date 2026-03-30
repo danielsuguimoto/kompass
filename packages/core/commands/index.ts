@@ -42,6 +42,11 @@ export const commandDefinitions: Record<string, CommandDefinition> = {
     templatePath: "commands/learn.md",
     subtask: false,
   },
+  merge: {
+    description: "Merge a branch and auto-resolve conflicts best-effort",
+    agent: "worker",
+    templatePath: "commands/merge.md",
+  },
   "pr/create": {
     description: "Summarize branch work and create a PR",
     agent: "worker",

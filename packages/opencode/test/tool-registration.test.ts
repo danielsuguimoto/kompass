@@ -13,8 +13,16 @@ type MockLogEntry = {
 
 type MockClient = {
   logs: MockLogEntry[];
+  sessionCommands: Array<Record<string, unknown>>;
+  sessionPrompts: Array<Record<string, unknown>>;
+  sessionPromptAsyncs: Array<Record<string, unknown>>;
   app: {
     log(entry: MockLogEntry): Promise<boolean>;
+  };
+  session: {
+    command(options: Record<string, unknown>): Promise<Record<string, unknown>>;
+    prompt(options: Record<string, unknown>): Promise<Record<string, unknown>>;
+    promptAsync(options: Record<string, unknown>): Promise<Record<string, unknown>>;
   };
   instance: {
     dispose(): Promise<boolean>;
@@ -42,13 +50,53 @@ async function withTempHome<T>(run: (homeDir: string) => Promise<T>): Promise<T>
 
 function createMockClient(): MockClient {
   const logs: MockLogEntry[] = [];
+  const sessionCommands: Array<Record<string, unknown>> = [];
+  const sessionPrompts: Array<Record<string, unknown>> = [];
+  const sessionPromptAsyncs: Array<Record<string, unknown>> = [];
+
+  function response(text: string, id: string) {
+    return {
+      data: {
+        info: { id },
+        parts: [{ type: "text", text }],
+      },
+      error: undefined,
+      request: new Request("http://localhost/mock"),
+      response: new Response(),
+    };
+  }
 
   return {
     logs,
+    sessionCommands,
+    sessionPrompts,
+    sessionPromptAsyncs,
     app: {
       log: async (entry: (typeof logs)[number]) => {
         logs.push(entry);
         return true;
+      },
+    },
+    session: {
+      command: async (options: Record<string, unknown>) => {
+        sessionCommands.push(options);
+        const body = (options.body ?? {}) as { command?: string; arguments?: string };
+        return response(`Ran /${body.command ?? "unknown"} ${body.arguments ?? ""}`.trim(), "assistant-command");
+      },
+      prompt: async (options: Record<string, unknown>) => {
+        sessionPrompts.push(options);
+        const parts = ((options.body ?? {}) as { parts?: Array<{ text?: string }> }).parts ?? [];
+        const text = parts.map((part) => part.text ?? "").join("\n").trim();
+        return response(text, "assistant-prompt");
+      },
+      promptAsync: async (options: Record<string, unknown>) => {
+        sessionPromptAsyncs.push(options);
+        return {
+          data: undefined,
+          error: undefined,
+          request: new Request("http://localhost/mock"),
+          response: new Response(null, { status: 204 }),
+        };
       },
     },
     instance: {
@@ -65,11 +113,13 @@ describe("createOpenCodeTools", () => {
       }) as never, createMockClient() as never, process.cwd());
 
       assert.ok(tools.kompass_changes_load);
+      assert.ok(tools.kompass_session_command);
       assert.ok(tools.kompass_pr_load);
       assert.ok(tools.kompass_pr_sync);
       assert.ok(tools.kompass_ticket_load);
       assert.ok(tools.kompass_ticket_sync);
       assert.equal(tools.changes_load, undefined);
+      assert.equal(tools.session_command, undefined);
       assert.equal(tools.pr_load, undefined);
       assert.equal(tools.pr_sync, undefined);
       assert.equal(tools.ticket_load, undefined);
@@ -88,6 +138,7 @@ describe("createOpenCodeTools", () => {
           `{
             "tools": {
               "changes_load": { "enabled": false },
+              "session_command": { "enabled": false },
               "pr_load": { "enabled": false },
               "pr_sync": { "enabled": false },
               "ticket_sync": {
@@ -123,6 +174,9 @@ describe("createOpenCodeTools", () => {
           `{
             // jsonc config should work
             "tools": {
+              "session_command": {
+                "enabled": false
+              },
               "pr_load": {
                 "enabled": true,
                 "name": "pull_request_context",
@@ -202,7 +256,80 @@ describe("createOpenCodeTools", () => {
     });
   });
 
-  test("observes slash-command expansion failures without throwing", async () => {
+  test("session_command queues expanded commands into the current session", async () => {
+    await withTempHome(async () => {
+      const client = createMockClient();
+      const tools = await createOpenCodeTools((() => {
+        throw new Error("not implemented");
+      }) as never, client as never, process.cwd());
+
+      const output = await (tools.kompass_session_command as any).execute(
+        { input: "/review auth bug" },
+        {
+          sessionID: "session-1",
+          messageID: "message-1",
+          agent: "worker",
+          directory: process.cwd(),
+          worktree: process.cwd(),
+          abort: new AbortController().signal,
+          metadata() {},
+          ask: async () => {},
+        },
+      );
+
+      const result = JSON.parse(output);
+
+      assert.equal(result.agent, "reviewer");
+      assert.equal(result.command, "review");
+      assert.equal(result.arguments, "auth bug");
+      assert.equal(result.expanded, true);
+      assert.equal(result.queued, true);
+      assert.equal(result.mode, "prompt_async");
+      assert.match(result.body, /kompass_changes_load/);
+      assert.doesNotMatch(result.body, /`changes_load`/);
+      assert.equal(client.sessionCommands.length, 0);
+      assert.equal(client.sessionPromptAsyncs.length, 1);
+      assert.deepEqual(client.sessionPromptAsyncs[0], {
+        path: { id: "session-1" },
+        query: { directory: process.cwd() },
+        body: {
+          agent: "reviewer",
+          parts: [{ type: "text", text: result.body }],
+        },
+      });
+      assert.equal(client.sessionPrompts.length, 0);
+    });
+  });
+
+  test("command tool rejects plain-text input", async () => {
+    await withTempHome(async () => {
+      const client = createMockClient();
+      const tools = await createOpenCodeTools((() => {
+        throw new Error("not implemented");
+      }) as never, client as never, process.cwd());
+
+      await assert.rejects(
+        (tools.kompass_session_command as any).execute(
+          { input: "Investigate the redirect bug", agent: "worker" },
+          {
+            sessionID: "session-2",
+            messageID: "message-2",
+            agent: "worker",
+            directory: process.cwd(),
+            worktree: process.cwd(),
+            abort: new AbortController().signal,
+            metadata() {},
+            ask: async () => {},
+          },
+        ),
+        /requires slash-command input/,
+      );
+      assert.equal(client.sessionCommands.length, 0);
+      assert.equal(client.sessionPrompts.length, 0);
+    });
+  });
+
+  test("does not expand slash commands in the task hook", async () => {
     await withTempHome(async () => {
       const client = createMockClient();
       const tempDir = await mkdtemp(path.join(os.tmpdir(), "kompass-tools-bad-config-"));
@@ -244,7 +371,7 @@ describe("createOpenCodeTools", () => {
 
         assert.equal(output.args.prompt, "/review auth bug");
         assert.ok(client.logs.some((entry) => entry.body?.message?.includes("Skipping Kompass tool registration")));
-        assert.ok(client.logs.some((entry) => entry.body?.message?.includes("Failed to expand slash command for task tool")));
+        assert.ok(client.logs.some((entry) => entry.body?.message?.includes("Executing Kompass task tool")));
       } finally {
         await rm(tempDir, { recursive: true, force: true });
       }

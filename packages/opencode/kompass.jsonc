@@ -17,6 +17,7 @@
     "commit-and-push": { "enabled": true },
     "dev": { "enabled": true },
     "learn": { "enabled": true },
+    "merge": { "enabled": true },
     "pr/create": { "enabled": true },
     "pr/fix": { "enabled": true },
     "pr/review": { "enabled": true },
@@ -40,6 +41,7 @@
 
   "tools": {
     "changes_load": { "enabled": true },
+    "session_command": { "enabled": true },
     "pr_load": { "enabled": true },
     "pr_sync": { "enabled": true },
     "ticket_load": { "enabled": true },
