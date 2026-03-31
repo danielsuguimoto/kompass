@@ -48,8 +48,7 @@ $ARGUMENTS
 
 - Before continuing, send the exact `kompass_session_command` block below through `kompass_session_command`
 
-<kompass_session_command agent="worker">
-/dev
+<kompass_session_command agent="worker" command="dev">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>
@@ -62,8 +61,7 @@ Additional context: <additional-context>
 
 - Before continuing, send the exact `kompass_session_command` block below through `kompass_session_command`
 
-<kompass_session_command agent="worker">
-/branch
+<kompass_session_command agent="worker" command="branch">
 Branch naming guidance: <ticket-summary>
 Additional context: <additional-context>
 </kompass_session_command>
@@ -76,8 +74,7 @@ Additional context: <additional-context>
 
 - Before continuing, send the exact `kompass_session_command` block below through `kompass_session_command`
 
-<kompass_session_command agent="worker">
-/commit-and-push
+<kompass_session_command agent="worker" command="commit-and-push">
 Ticket reference: <ticket-ref>
 Ticket summary: <ticket-summary>
 Additional context: <additional-context>
@@ -91,8 +88,7 @@ Additional context: <additional-context>
 
 - Before continuing, send the exact `kompass_session_command` block below through `kompass_session_command`
 
-<kompass_session_command agent="worker">
-/pr/create
+<kompass_session_command agent="worker" command="pr/create">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>

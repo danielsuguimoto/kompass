@@ -2,11 +2,10 @@ import { resolveCommands } from "../commands/index.ts";
 import { stringifyJson, type ToolDefinition, type ToolExecutionContext } from "./shared.ts";
 
 export type SessionCommandResolution = {
-  input: string;
   agent?: string;
   command: string;
-  arguments: string;
   body: string;
+  prompt: string;
   expanded: boolean;
 };
 
@@ -14,29 +13,22 @@ type ResolveSessionCommandOptions = {
   rewriteBody?: (body: string) => string;
 };
 
-type ParsedSlashCommand = {
-  agent?: string;
+type SessionCommandInput = {
   command: string;
-  arguments: string;
+  body?: string;
+  agent?: string;
 };
 
-function parseSlashCommand(value: string): ParsedSlashCommand | undefined {
-  const match = value.trim().match(/^(?:@(\S+)\s+)?\/([^\s]+)(?:\s+([\s\S]*))?$/);
-
-  if (!match) return;
-
-  return {
-    agent: match[1],
-    command: match[2],
-    arguments: match[3]?.trim() ?? "",
-  };
+function renderSlashCommand(command: string, body: string) {
+  const trimmedBody = body.trim();
+  return trimmedBody ? `/${command}\n${trimmedBody}` : `/${command}`;
 }
 
-function expandCommandTemplate(template: string, commandArguments: string) {
-  const trimmedArguments = commandArguments.trim();
-  const positionalArguments = trimmedArguments ? trimmedArguments.split(/\s+/) : [];
+function expandCommandTemplate(template: string, commandBody: string) {
+  const trimmedBody = commandBody.trim();
+  const positionalArguments = trimmedBody ? trimmedBody.split(/\s+/) : [];
 
-  let expandedTemplate = template.replaceAll("$ARGUMENTS", trimmedArguments);
+  let expandedTemplate = template.replaceAll("$ARGUMENTS", trimmedBody);
 
   for (const [index, argument] of positionalArguments.entries()) {
     expandedTemplate = expandedTemplate.replaceAll(`$${index + 1}`, argument);
@@ -47,42 +39,40 @@ function expandCommandTemplate(template: string, commandArguments: string) {
 
 export async function resolveSessionCommand(
   projectRoot: string,
-  input: string,
+  input: SessionCommandInput,
   options?: ResolveSessionCommandOptions,
 ): Promise<SessionCommandResolution> {
-  const normalizedInput = input.trim();
-  const parsedCommand = parseSlashCommand(input);
+  const normalizedCommand = input.command.trim();
+  const normalizedBody = input.body?.trim() ?? "";
 
-  if (!parsedCommand) {
-    throw new Error("session_command requires slash-command input");
+  if (!normalizedCommand) {
+    throw new Error("session_command requires a command");
   }
 
   const commands = await resolveCommands(projectRoot);
-  const definition = commands[parsedCommand.command];
+  const definition = commands[normalizedCommand];
 
   if (!definition) {
     return {
-      input: normalizedInput,
-      ...(parsedCommand.agent ? { agent: parsedCommand.agent } : {}),
-      command: parsedCommand.command,
-      arguments: parsedCommand.arguments,
-      body: normalizedInput,
+      ...(input.agent?.trim() ? { agent: input.agent.trim() } : {}),
+      command: normalizedCommand,
+      body: normalizedBody,
+      prompt: renderSlashCommand(normalizedCommand, normalizedBody),
       expanded: false,
     };
   }
 
-  let body = expandCommandTemplate(definition.template, parsedCommand.arguments);
+  let prompt = expandCommandTemplate(definition.template, normalizedBody);
 
   if (options?.rewriteBody) {
-    body = options.rewriteBody(body);
+    prompt = options.rewriteBody(prompt);
   }
 
   return {
-    input: normalizedInput,
-    agent: parsedCommand.agent ?? definition.agent,
-    command: parsedCommand.command,
-    arguments: parsedCommand.arguments,
-    body,
+    agent: input.agent?.trim() || definition.agent,
+    command: normalizedCommand,
+    body: normalizedBody,
+    prompt,
     expanded: true,
   };
 }
@@ -92,28 +82,28 @@ export function createSessionCommandTool(
   options?: ResolveSessionCommandOptions,
 ) {
   return {
-    description: "Resolve a slash command for same-session queuing",
+    description: "Resolve a command and body for same-session queuing",
     args: {
-      input: {
+      command: {
         type: "string",
-        description: "Raw slash command to resolve",
+        description: "Command name to resolve, without the leading slash",
+      },
+      body: {
+        type: "string",
+        optional: true,
+        description: "Literal body content from the session_command block",
       },
       agent: {
         type: "string",
         optional: true,
-        description: "Optional agent override from the dispatch tag",
+        description: "Optional agent override from the session_command tag",
       },
     },
     async execute(
-      args: { input: string; agent?: string },
+      args: { command: string; body?: string; agent?: string },
       _ctx: ToolExecutionContext,
     ) {
-      const resolved = await resolveSessionCommand(projectRoot, args.input, options);
-
-      return stringifyJson({
-        ...resolved,
-        agent: args.agent?.trim() || resolved.agent,
-      });
+      return stringifyJson(await resolveSessionCommand(projectRoot, args, options));
     },
-  } satisfies ToolDefinition<{ input: string; agent?: string }>;
+  } satisfies ToolDefinition<{ command: string; body?: string; agent?: string }>;
 }

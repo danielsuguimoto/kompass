@@ -9,21 +9,25 @@ process.env.HOME = path.join(os.tmpdir(), `kompass-test-home-${process.pid}-core
 
 describe("resolveSessionCommand", () => {
   test("expands known slash commands and infers their default agent", async () => {
-    const result = await resolveSessionCommand(process.cwd(), "/review auth bug");
+    const result = await resolveSessionCommand(process.cwd(), { command: "review", body: "auth bug" });
 
     assert.equal(result.agent, "reviewer");
     assert.equal(result.command, "review");
-    assert.equal(result.arguments, "auth bug");
+    assert.equal(result.body, "auth bug");
     assert.equal(result.expanded, true);
-    assert.match(result.body, /<arguments>\s*auth bug\s*<\/arguments>/);
+    assert.match(result.prompt, /<arguments>\s*auth bug\s*<\/arguments>/);
   });
 
   test("preserves explicit agent routing when present", async () => {
-    const result = await resolveSessionCommand(process.cwd(), "@planner /ticket/plan auth bug");
+    const result = await resolveSessionCommand(process.cwd(), {
+      agent: "planner",
+      command: "ticket/plan",
+      body: "auth bug",
+    });
 
     assert.equal(result.agent, "planner");
     assert.equal(result.command, "ticket/plan");
-    assert.equal(result.arguments, "auth bug");
+    assert.equal(result.body, "auth bug");
     assert.equal(result.expanded, true);
   });
 
@@ -31,7 +35,7 @@ describe("resolveSessionCommand", () => {
     const { createSessionCommandTool } = await import("../index.ts");
     const tool = createSessionCommandTool(process.cwd());
     const output = await tool.execute(
-      { input: "/review auth bug", agent: "worker" },
+      { command: "review", body: "auth bug", agent: "worker" },
       { worktree: process.cwd(), directory: process.cwd() },
     );
     const result = JSON.parse(output);
@@ -41,21 +45,20 @@ describe("resolveSessionCommand", () => {
   });
 
   test("keeps unknown slash commands dispatchable without expansion", async () => {
-    const result = await resolveSessionCommand(process.cwd(), "/unknown auth bug");
+    const result = await resolveSessionCommand(process.cwd(), { command: "unknown", body: "auth bug" });
 
     assert.deepEqual(result, {
-      input: "/unknown auth bug",
       command: "unknown",
-      arguments: "auth bug",
-      body: "/unknown auth bug",
+      body: "auth bug",
+      prompt: "/unknown\nauth bug",
       expanded: false,
     });
   });
 
-  test("rejects plain-text input", async () => {
+  test("rejects missing commands", async () => {
     await assert.rejects(
-      resolveSessionCommand(process.cwd(), "Investigate the login redirect bug"),
-      /requires slash-command input/,
+      resolveSessionCommand(process.cwd(), { command: "   ", body: "auth bug" }),
+      /requires a command/,
     );
   });
 });

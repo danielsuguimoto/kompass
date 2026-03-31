@@ -5,7 +5,7 @@ description: Implement a ticket by orchestrating development, branching, commit-
 
 ## Purpose
 
-Use `/ticket/dev` when implementation starts from a tracked ticket and should run through shipping.
+Use `/ticket/dev` when implementation starts from a tracked ticket and should run through shipping with queued same-session command steps.
 
 ## Usage
 
@@ -16,15 +16,15 @@ Use `/ticket/dev` when implementation starts from a tracked ticket and should ru
 ## Typical flow
 
 - load the ticket and its surrounding context
-- delegate `/dev` for implementation and validation
-- delegate `/branch` for branch naming from the ticket summary
-- delegate `/commit-and-push`
-- delegate `/pr/create` and return the resulting PR URL
+- queue `dev` for implementation and validation
+- queue `branch` for branch naming from the ticket summary
+- queue `commit-and-push`
+- queue `pr/create` as the next shipping step
 
 ## Common tools
 
 - `ticket_load`
-- `dispatch(/dev)`
-- `dispatch(/branch)`
-- `dispatch(/commit-and-push)`
-- `dispatch(/pr/create)`
+- `session_command(worker, dev)`
+- `session_command(worker, branch)`
+- `session_command(worker, commit-and-push)`
+- `session_command(worker, pr/create)`

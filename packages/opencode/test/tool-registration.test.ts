@@ -264,7 +264,7 @@ describe("createOpenCodeTools", () => {
       }) as never, client as never, process.cwd());
 
       const output = await (tools.kompass_session_command as any).execute(
-        { input: "/review auth bug" },
+        { command: "review", body: "auth bug" },
         {
           sessionID: "session-1",
           messageID: "message-1",
@@ -281,12 +281,12 @@ describe("createOpenCodeTools", () => {
 
       assert.equal(result.agent, "reviewer");
       assert.equal(result.command, "review");
-      assert.equal(result.arguments, "auth bug");
+      assert.equal(result.body, "auth bug");
       assert.equal(result.expanded, true);
       assert.equal(result.queued, true);
       assert.equal(result.mode, "prompt_async");
-      assert.match(result.body, /kompass_changes_load/);
-      assert.doesNotMatch(result.body, /`changes_load`/);
+      assert.match(result.prompt, /kompass_changes_load/);
+      assert.doesNotMatch(result.prompt, /`changes_load`/);
       assert.equal(client.sessionCommands.length, 0);
       assert.equal(client.sessionPromptAsyncs.length, 1);
       assert.deepEqual(client.sessionPromptAsyncs[0], {
@@ -294,14 +294,14 @@ describe("createOpenCodeTools", () => {
         query: { directory: process.cwd() },
         body: {
           agent: "reviewer",
-          parts: [{ type: "text", text: result.body }],
+          parts: [{ type: "text", text: result.prompt }],
         },
       });
       assert.equal(client.sessionPrompts.length, 0);
     });
   });
 
-  test("command tool rejects plain-text input", async () => {
+  test("command tool rejects missing commands", async () => {
     await withTempHome(async () => {
       const client = createMockClient();
       const tools = await createOpenCodeTools((() => {
@@ -310,7 +310,7 @@ describe("createOpenCodeTools", () => {
 
       await assert.rejects(
         (tools.kompass_session_command as any).execute(
-          { input: "Investigate the redirect bug", agent: "worker" },
+          { command: "   ", body: "Investigate the redirect bug", agent: "worker" },
           {
             sessionID: "session-2",
             messageID: "message-2",
@@ -322,7 +322,7 @@ describe("createOpenCodeTools", () => {
             ask: async () => {},
           },
         ),
-        /requires slash-command input/,
+        /requires a command/,
       );
       assert.equal(client.sessionCommands.length, 0);
       assert.equal(client.sessionPrompts.length, 0);

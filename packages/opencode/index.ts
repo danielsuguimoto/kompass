@@ -81,14 +81,14 @@ function getSessionError(result: unknown) {
 async function executeSessionCommand(
   client: PluginInput["client"],
   context: { sessionID: string; directory: string },
-  sessionCommand: { agent?: string; command: string; arguments: string; body: string; expanded: boolean },
+  sessionCommand: { agent?: string; command: string; body: string; prompt: string; expanded: boolean },
 ) {
   const result = await client.session.promptAsync({
     path: { id: context.sessionID },
     query: { directory: context.directory },
     body: {
       ...(sessionCommand.agent ? { agent: sessionCommand.agent } : {}),
-      parts: [{ type: "text", text: sessionCommand.body }],
+      parts: [{ type: "text", text: sessionCommand.prompt }],
     },
   });
 
@@ -185,24 +185,26 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
     });
 
     return tool({
-      description: "Resolve a slash command and queue it in the current session",
+      description: "Resolve a command and body and queue it in the current session",
       args: {
-        input: tool.schema.string().describe("Raw slash command to execute"),
-        agent: tool.schema.string().describe("Optional agent override from the dispatch tag").optional(),
+        command: tool.schema.string().describe("Command name to execute, without the leading slash"),
+        body: tool.schema.string().describe("Literal body content from the session_command block").optional(),
+        agent: tool.schema.string().describe("Optional agent override from the session_command tag").optional(),
       },
       execute: async (args, context) => {
         context.metadata({
-          title: `Command ${args.input.trim()}`,
+          title: `Command /${args.command.trim()}`,
           metadata: {
+            command: args.command,
             agent: args.agent,
           },
         });
 
-        const resolved = JSON.parse(await definition.execute({ input: args.input, agent: args.agent }, context)) as {
+        const resolved = JSON.parse(await definition.execute(args, context)) as {
           agent?: string;
           command: string;
-          arguments: string;
           body: string;
+          prompt: string;
           expanded: boolean;
         };
         const dispatched = await executeSessionCommand(client, context, resolved);

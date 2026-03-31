@@ -46,8 +46,7 @@ $ARGUMENTS
 
 ### Delegate Planning
 
-<kompass_session_command agent="planner">
-/ticket/plan
+<kompass_session_command agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
@@ -68,8 +67,7 @@ Additional context: <additional-context>
     - `Revise` - update the plan based on feedback
 - custom answers enabled so the user can provide specific plan changes
 - If the user requests changes, store that feedback as `<user-answer>`
-<kompass_session_command agent="planner">
-/ticket/plan
+<kompass_session_command agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Current plan: <plan>
@@ -84,8 +82,7 @@ Additional context: <additional-context>
 
 ### Delegate Implementation
 
-<kompass_session_command agent="worker">
-/dev
+<kompass_session_command agent="worker" command="dev">
 Plan: <plan>
 Task: <task>
 Task context: <task-context>
@@ -97,8 +94,7 @@ Additional context: <additional-context>
 
 ### Delegate Commit
 
-<kompass_session_command agent="worker">
-/commit
+<kompass_session_command agent="worker" command="commit">
 Task: <task>
 Additional context: <additional-context>
 </kompass_session_command>

@@ -28,8 +28,7 @@ $ARGUMENTS
 
 ### Ensure Feature Branch
 
-<kompass_session_command agent="worker">
-/branch
+<kompass_session_command agent="worker" command="branch">
 Branch naming guidance: <branch-context>
 </kompass_session_command>
 
@@ -40,8 +39,7 @@ Branch naming guidance: <branch-context>
 
 ### Delegate Commit
 
-<kompass_session_command agent="worker">
-/commit
+<kompass_session_command agent="worker" command="commit">
 Additional context: <additional-context>
 </kompass_session_command>
 
@@ -53,8 +51,7 @@ Additional context: <additional-context>
 
 ### Delegate PR Creation
 
-<kompass_session_command agent="worker">
-/pr/create
+<kompass_session_command agent="worker" command="pr/create">
 Base branch: <base>
 Additional context: <additional-context>
 </kompass_session_command>

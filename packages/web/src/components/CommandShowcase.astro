@@ -124,6 +124,25 @@ const scenarios: CommandScenario[] = [
     ]
   },
   {
+    id: 'merge',
+    label: '/merge',
+    command: '/merge origin/main',
+    agentName: 'Worker',
+    task: 'Merge another branch into the current branch',
+    group: 'core',
+    steps: [
+      { id: 'thinking', phase: 'thinking', content: 'Confirm the working tree is clean, resolve the merge source, run the merge, and only continue if conflicts can be resolved confidently.' },
+      { id: 'tools', phase: 'tool_calls', toolCalls: [
+        { tool: 'bash', args: 'git status --short', status: 'complete' },
+        { tool: 'bash', args: 'git merge origin/main', status: 'complete' }
+      ] },
+      { id: 'output', phase: 'output', output: [
+        'Merged origin/main into docs/reference-cleanup',
+        'Commit: `9f8e7d6`'
+      ] }
+    ]
+  },
+  {
     id: 'rmslop',
     label: '/rmslop',
     command: '/rmslop main',
@@ -193,10 +212,10 @@ const scenarios: CommandScenario[] = [
       { id: 'thinking', phase: 'thinking', content: 'Load the ticket, then orchestrate implementation, branch creation, commit-and-push, and PR creation in order.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
         { tool: 'ticket_load', args: '#42', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /dev', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /branch', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /commit-and-push', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /pr/create', status: 'complete' }
+        { tool: 'session_command', args: 'worker · dev', status: 'complete' },
+        { tool: 'session_command', args: 'worker · branch', status: 'complete' },
+        { tool: 'session_command', args: 'worker · commit-and-push', status: 'complete' },
+        { tool: 'session_command', args: 'worker · pr/create', status: 'complete' }
       ] },
       { id: 'output', phase: 'output', output: [
         'Implemented ticket: refresh command docs',
@@ -362,9 +381,9 @@ const scenarios: CommandScenario[] = [
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Ensure a work branch, delegate commit creation, then delegate PR creation and stop on blockers.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
-        { tool: 'dispatch', args: 'worker · /branch', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /commit', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /pr/create', status: 'complete' }
+        { tool: 'session_command', args: 'worker · branch', status: 'complete' },
+        { tool: 'session_command', args: 'worker · commit', status: 'complete' },
+        { tool: 'session_command', args: 'worker · pr/create', status: 'complete' }
       ] },
       { id: 'output', phase: 'output', output: [
         'Ship flow complete',
@@ -384,10 +403,10 @@ const scenarios: CommandScenario[] = [
       { id: 'thinking', phase: 'thinking', content: 'Take the first unchecked item only, plan it, get approval, implement it, commit it, mark it complete, and loop.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
         { tool: 'read', args: '@TODO.md', status: 'complete' },
-        { tool: 'dispatch', args: 'planner · /ticket/plan', status: 'complete' },
+        { tool: 'session_command', args: 'planner · ticket/plan', status: 'complete' },
         { tool: 'question', args: 'Plan Review', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /dev', status: 'complete' },
-        { tool: 'dispatch', args: 'worker · /commit', status: 'complete' }
+        { tool: 'session_command', args: 'worker · dev', status: 'complete' },
+        { tool: 'session_command', args: 'worker · commit', status: 'complete' }
       ] },
       { id: 'output', phase: 'output', output: [
         'Todo complete: @TODO.md',
@@ -556,19 +575,19 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
                         <div class="tool-calls-block__header">
                           <span class="tool-calls-block__icon">▸</span>
                           <span class="tool-calls-block__label">
-                            {step.toolCalls.some(t => t.tool === 'dispatch') ? 'Delegated' : 'Explored'}
+                            {step.toolCalls.some(t => t.tool === 'session_command') ? 'Queued' : 'Explored'}
                           </span>
                           <span class="tool-calls-block__count">
-                            {step.toolCalls.length} {step.toolCalls.some(t => t.tool === 'dispatch') ? 'subagents' : 'reads, 1 search'}
+                            {step.toolCalls.length} {step.toolCalls.some(t => t.tool === 'session_command') ? 'session commands' : 'reads, 1 search'}
                           </span>
                         </div>
                         <div class="tool-calls-block__list">
                           {step.toolCalls.map((tool) => (
-                            <div class:list={{ "tool-call": true, "tool-call--dispatch": tool.tool === 'dispatch' }} data-tool-status={tool.status}>
-                              {tool.tool === 'dispatch' ? (
+                            <div class:list={{ "tool-call": true, "tool-call--session-command": tool.tool === 'session_command' }} data-tool-status={tool.status}>
+                              {tool.tool === 'session_command' ? (
                                 <>
                                   <span class="tool-call__indicator"></span>
-                                  <span class="tool-call__dispatch-cmd">{tool.args}</span>
+                                  <span class="tool-call__session-command">{tool.args}</span>
                                 </>
                               ) : (
                                 <>
@@ -1362,7 +1381,7 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
     font-size: 0.8rem;
   }
 
-  .tool-call--dispatch {
+  .tool-call--session-command {
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -1381,7 +1400,7 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
     animation: subagentPulse 1.5s ease-in-out infinite;
   }
 
-  .tool-call__dispatch-cmd {
+  .tool-call__session-command {
     color: var(--text);
     font-family: var(--font-mono);
     font-size: 0.85rem;

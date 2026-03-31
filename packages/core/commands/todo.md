@@ -41,8 +41,7 @@ $ARGUMENTS
 
 ### Delegate Planning
 
-<session_command agent="planner">
-/ticket/plan
+<session_command agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
@@ -63,8 +62,7 @@ Additional context: <additional-context>
     - `Revise` - update the plan based on feedback
 - custom answers enabled so the user can provide specific plan changes
 - If the user requests changes, store that feedback as `<user-answer>`
-<session_command agent="planner">
-/ticket/plan
+<session_command agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Current plan: <plan>
@@ -79,8 +77,7 @@ Additional context: <additional-context>
 
 ### Delegate Implementation
 
-<session_command agent="worker">
-/dev
+<session_command agent="worker" command="dev">
 Plan: <plan>
 Task: <task>
 Task context: <task-context>
@@ -92,8 +89,7 @@ Additional context: <additional-context>
 
 ### Delegate Commit
 
-<session_command agent="worker">
-/commit
+<session_command agent="worker" command="commit">
 Task: <task>
 Additional context: <additional-context>
 </session_command>

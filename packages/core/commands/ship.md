@@ -23,8 +23,7 @@ $ARGUMENTS
 
 ### Ensure Feature Branch
 
-<session_command agent="worker">
-/branch
+<session_command agent="worker" command="branch">
 Branch naming guidance: <branch-context>
 </session_command>
 
@@ -35,8 +34,7 @@ Branch naming guidance: <branch-context>
 
 ### Delegate Commit
 
-<session_command agent="worker">
-/commit
+<session_command agent="worker" command="commit">
 Additional context: <additional-context>
 </session_command>
 
@@ -48,8 +46,7 @@ Additional context: <additional-context>
 
 ### Delegate PR Creation
 
-<session_command agent="worker">
-/pr/create
+<session_command agent="worker" command="pr/create">
 Base branch: <base>
 Additional context: <additional-context>
 </session_command>

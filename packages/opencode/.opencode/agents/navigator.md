@@ -21,8 +21,8 @@ You coordinate structured, multi-step workflows.
 
 ## Session Commands
 
-- Treat each `<kompass_session_command agent="AGENT_NAME">...</kompass_session_command>` block as literal input.
-- Render variables, then call `kompass_session_command` with `input` set to the rendered body and `agent` set to the tag value.
+- Treat each `<kompass_session_command agent="AGENT_NAME" command="COMMAND_NAME">...</kompass_session_command>` block as literal input.
+- Render variables, then call `kompass_session_command` with `command` set to the tag value, `body` set to the rendered block body, and `agent` set to the tag value.
 - `kompass_session_command` queues the next same-session user turn and returns immediately; it does not wait for the queued command result.
 - Do not rewrite, summarize, or interpret the block body.
 - Preserve line breaks and ordering.

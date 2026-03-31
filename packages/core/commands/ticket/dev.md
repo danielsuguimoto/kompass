@@ -33,8 +33,7 @@ $ARGUMENTS
 
 - Before continuing, send the exact `session_command` block below through `session_command`
 
-<session_command agent="worker">
-/dev
+<session_command agent="worker" command="dev">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>
@@ -47,8 +46,7 @@ Additional context: <additional-context>
 
 - Before continuing, send the exact `session_command` block below through `session_command`
 
-<session_command agent="worker">
-/branch
+<session_command agent="worker" command="branch">
 Branch naming guidance: <ticket-summary>
 Additional context: <additional-context>
 </session_command>
@@ -61,8 +59,7 @@ Additional context: <additional-context>
 
 - Before continuing, send the exact `session_command` block below through `session_command`
 
-<session_command agent="worker">
-/commit-and-push
+<session_command agent="worker" command="commit-and-push">
 Ticket reference: <ticket-ref>
 Ticket summary: <ticket-summary>
 Additional context: <additional-context>
@@ -76,8 +73,7 @@ Additional context: <additional-context>
 
 - Before continuing, send the exact `session_command` block below through `session_command`
 
-<session_command agent="worker">
-/pr/create
+<session_command agent="worker" command="pr/create">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>

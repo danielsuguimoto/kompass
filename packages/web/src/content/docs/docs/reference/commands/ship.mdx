@@ -5,7 +5,7 @@ description: Move current work through branch, commit, and PR creation as a fast
 
 ## Purpose
 
-Use `/ship` when you want a fast path from current work to a PR through local orchestration.
+Use `/ship` when you want a fast path from current work to a PR through local orchestration and queued same-session command steps.
 
 ## Usage
 
@@ -16,12 +16,11 @@ Use `/ship` when you want a fast path from current work to a PR through local or
 ## Typical flow
 
 - ensure there is a suitable work branch
-- delegate `/commit`
-- delegate `/pr/create`
+- queue `branch`, `commit`, and `pr/create` through `session_command`
 - stop on blockers and report `Nothing to ship` when PR creation finds no shippable work
 
 ## Common tools
 
-- `dispatch(/branch)`
-- `dispatch(/commit)`
-- `dispatch(/pr/create)`
+- `session_command(worker, branch)`
+- `session_command(worker, commit)`
+- `session_command(worker, pr/create)`

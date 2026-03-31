@@ -64,7 +64,7 @@ packages/opencode/.opencode/ # Generated OpenCode output for review
 - Prefer explicit subsection names like `### Load ... Context`, `### Check Blockers`, `### Delegate ...`, and `### Mark Complete And Loop` when the command coordinates multiple phases or subagents
 - Treat loader tools and provided attachments as the source of truth for orchestration inputs; avoid extra exploratory commands when an existing tool result already answers the question
 - Before dispatching a same-session command step, say what result should be stored and whether the workflow must stop, pause, or continue based on that result
-- Use literal `<session_command>` tags when the workflow must queue exact text through `session_command`; `agent` is required, the block body is the exact rendered message to send, and slash commands belong on the first line of the body when needed
+- Use literal `<session_command>` tags when the workflow must queue exact text through `session_command`; `agent` and `command` are required, and the block body is the exact rendered body to send for that command
 - Do not use `<task>` blocks in command docs; author navigator delegation with `<session_command>` blocks only
 - When a command can pause for approval or loop over repeated work, describe the resume condition and the exact cases that must STOP without mutating state
 - Use `## Additional Context` for instructions about how optional guidance, related tickets, focus areas, or other stored context should influence analysis and response formatting
@@ -105,8 +105,7 @@ $ARGUMENTS
 
 ### Delegate Planning
 
-<session_command agent="planner">
-/ticket/plan
+<session_command agent="planner" command="ticket/plan">
 
 Task: <task>
 Task context: <task-context>
@@ -118,8 +117,7 @@ Additional context: <additional-context>
 
 ### Delegate Implementation
 
-<session_command agent="worker">
-/dev
+<session_command agent="worker" command="dev">
 
 Plan: <plan>
 Constraints: <additional-context>
@@ -136,13 +134,13 @@ Constraints: <additional-context>
 Example delegation rule:
 
 ```text
-Before dispatching, write the exact `<session_command ...>...</session_command>` block, say what result should be stored, and whether the workflow should continue or STOP based on that result.
+Before dispatching, write the exact `<session_command ...>...</session_command>` block, say what queue acknowledgement should be stored, and whether the workflow should continue or STOP based on that acknowledgement.
 ```
 
 Example literal session command rule:
 
 ```text
-Before literal command forwarding, write the exact `<session_command ...>...</session_command>` block, put the slash command on the first line of the body when needed, then call `session_command` with the rendered body and exact `agent`, and say what queue acknowledgement should be stored and whether the workflow should continue or STOP based on that acknowledgement.
+Before literal command forwarding, write the exact `<session_command ...>...</session_command>` block, then call `session_command` with the rendered body, exact `agent`, and exact `command`, and say what queue acknowledgement should be stored and whether the workflow should continue or STOP based on that acknowledgement.
 ```
 
 ## Component Authoring
