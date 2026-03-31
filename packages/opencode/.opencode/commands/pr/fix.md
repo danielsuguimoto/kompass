@@ -36,9 +36,21 @@ $ARGUMENTS
 - Otherwise, call `kompass_pr_load` with no arguments
 - Do not run separate git or GitHub commands just to discover the PR before calling `kompass_pr_load`
 - Store the result as `<pr-context>`
+- Store the PR head branch as `<pr-branch>` from `<pr-context>.pr.headRefName` when it is available
+- Run `git branch --show-current` and store the trimmed result as `<current-branch>` when it is available
 - Treat the loaded PR body, discussion, review history, and any attachments or linked artifacts returned by the loader as part of the source context
 - Review attached images, screenshots, videos, PDFs, and other linked files whenever they can affect the requested fix, review outcome, reproduction steps, or acceptance criteria
 - If any relevant attachment cannot be accessed, note that gap and continue only when the remaining PR context is still sufficient to proceed reliably
+
+### Align Local Branch
+
+- If `<pr-branch>` is unavailable, STOP and report that the PR head branch could not be determined
+- If `<current-branch>` differs from `<pr-branch>`:
+  - Checkout `<pr-branch>` before analyzing repository files or making code changes for this PR
+  - After checkout, store the active branch as `<active-branch>`
+  - If checkout fails, STOP and report that the PR branch could not be checked out locally
+- Otherwise, store `<current-branch>` as `<active-branch>`
+- Do not inspect or modify local code for this PR until `<active-branch>` equals `<pr-branch>`
 
 ### Analyze Feedback
 
@@ -54,9 +66,10 @@ Do not blindly follow every suggestion—some may lead you off course.
 
 1. Fix critical navigation issues first
 2. Follow existing code patterns and conventions
-3. Make focused, minimal changes
-4. When maintaining your current heading despite a suggestion, be prepared to explain why
-5. Store the modified-file count as `<changes-count>`
+3. Use `<active-branch>` as the working branch for every local code read or edit in this command
+4. Make focused, minimal changes
+5. When maintaining your current heading despite a suggestion, be prepared to explain why
+6. Store the modified-file count as `<changes-count>`
 
 ### Validate Changes
 

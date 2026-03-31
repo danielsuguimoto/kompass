@@ -32,9 +32,21 @@ $ARGUMENTS
 - Otherwise, call `kompass_pr_load` with no arguments
 - Do not run separate git or GitHub commands just to discover the PR before calling `kompass_pr_load`
 - Store the result as `<pr-context>`
+- Store the PR head branch as `<pr-branch>` from `<pr-context>.pr.headRefName` when it is available
+- Run `git branch --show-current` and store the trimmed result as `<current-branch>` when it is available
 - Treat the loaded PR body, discussion, review history, and any attachments or linked artifacts returned by the loader as part of the source context
 - Review attached images, screenshots, videos, PDFs, and other linked files whenever they can affect the requested fix, review outcome, reproduction steps, or acceptance criteria
 - If any relevant attachment cannot be accessed, note that gap and continue only when the remaining PR context is still sufficient to proceed reliably
+
+### Align Local Branch
+
+- If `<pr-branch>` is unavailable, STOP and report that the PR head branch could not be determined
+- If `<current-branch>` differs from `<pr-branch>`:
+  - Checkout `<pr-branch>` before inspecting local repository files for this PR review
+  - After checkout, store the active branch as `<active-branch>`
+  - If checkout fails, STOP and report that the PR branch could not be checked out locally
+- Otherwise, store `<current-branch>` as `<active-branch>`
+- Do not inspect local repository code for this PR until `<active-branch>` equals `<pr-branch>`
 
 ### Load Ticket Context
 
@@ -55,16 +67,17 @@ Call `kompass_changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <pr
 
 Following the reviewer agent guidance:
 1. Check `<pr-context.reviews>`, `<pr-context.issueComments>`, and `<pr-context.threads>`
-2. Derive `<settled-threads>` from `<pr-context.threads>`:
+2. Use `<active-branch>` whenever local repository files need to be inspected alongside the diff
+3. Derive `<settled-threads>` from `<pr-context.threads>`:
    - Treat resolved threads as settled
    - Treat threads as settled when they already contain feedback from `<pr-context.viewerLogin>` and a later reply makes it clear the concern was intentionally declined, deferred, or answered without a code change request
    - Treat threads as settled when the author's reply directly answers the concern and the current diff does not add a materially different failure mode
-3. Derive `<prior-review-baseline>` from `<pr-context.reviews>` authored by `<pr-context.viewerLogin>`
-4. Use diff hunks in `<changes>` to map inline comments to the correct lines
-5. Derive `<eligible-findings>` as findings that are:
-   - new in this diff
-   - from a previously unreviewed changed area
-   - clearly missed material defects with a concrete failure mode
+4. Derive `<prior-review-baseline>` from `<pr-context.reviews>` authored by `<pr-context.viewerLogin>`
+5. Use diff hunks in `<changes>` to map inline comments to the correct lines
+6. Derive `<eligible-findings>` as findings that are:
+    - new in this diff
+    - from a previously unreviewed changed area
+    - clearly missed material defects with a concrete failure mode
    Exclude anything already covered by `<settled-threads>` or `<prior-review-baseline>` on the same effective diff.
 
 Derive `<already-approved>` from existing approvals on `<pr-context.pr.headRefOid>`.

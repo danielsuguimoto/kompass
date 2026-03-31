@@ -24,6 +24,16 @@ $ARGUMENTS
 
 <%~ include("@load-pr", { ref: "<pr-ref>", result: "<pr-context>" }) %>
 
+### Align Local Branch
+
+- If `<pr-branch>` is unavailable, STOP and report that the PR head branch could not be determined
+- If `<current-branch>` differs from `<pr-branch>`:
+  - Checkout `<pr-branch>` before inspecting local repository files for this PR review
+  - After checkout, store the active branch as `<active-branch>`
+  - If checkout fails, STOP and report that the PR branch could not be checked out locally
+- Otherwise, store `<current-branch>` as `<active-branch>`
+- Do not inspect local repository code for this PR until `<active-branch>` equals `<pr-branch>`
+
 ### Load Ticket Context
 
 If `<pr-context.pr.body>` links to exactly one clear ticket:
@@ -39,16 +49,17 @@ Call `changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <pr-context
 
 Following the reviewer agent guidance:
 1. Check `<pr-context.reviews>`, `<pr-context.issueComments>`, and `<pr-context.threads>`
-2. Derive `<settled-threads>` from `<pr-context.threads>`:
+2. Use `<active-branch>` whenever local repository files need to be inspected alongside the diff
+3. Derive `<settled-threads>` from `<pr-context.threads>`:
    - Treat resolved threads as settled
    - Treat threads as settled when they already contain feedback from `<pr-context.viewerLogin>` and a later reply makes it clear the concern was intentionally declined, deferred, or answered without a code change request
    - Treat threads as settled when the author's reply directly answers the concern and the current diff does not add a materially different failure mode
-3. Derive `<prior-review-baseline>` from `<pr-context.reviews>` authored by `<pr-context.viewerLogin>`
-4. Use diff hunks in `<changes>` to map inline comments to the correct lines
-5. Derive `<eligible-findings>` as findings that are:
-   - new in this diff
-   - from a previously unreviewed changed area
-   - clearly missed material defects with a concrete failure mode
+4. Derive `<prior-review-baseline>` from `<pr-context.reviews>` authored by `<pr-context.viewerLogin>`
+5. Use diff hunks in `<changes>` to map inline comments to the correct lines
+6. Derive `<eligible-findings>` as findings that are:
+    - new in this diff
+    - from a previously unreviewed changed area
+    - clearly missed material defects with a concrete failure mode
    Exclude anything already covered by `<settled-threads>` or `<prior-review-baseline>` on the same effective diff.
 
 <%= it.config.shared.prApprove === true ? "Derive `<already-approved>` from existing approvals on `<pr-context.pr.headRefOid>`.\n\n" : "" %>Before publishing, derive: `<has-inline-comments>`, `<has-body-note>`, `<publish-grade>`, and whether each proposed finding is included in `<eligible-findings>`.
