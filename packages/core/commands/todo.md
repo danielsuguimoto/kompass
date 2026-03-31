@@ -41,12 +41,11 @@ $ARGUMENTS
 
 ### Delegate Planning
 
-<dispatch agent="planner">
-/ticket/plan
+<session_command agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
 - Ask the planner for a concise implementation plan with clear scope, risks, and validation steps
 - Store the result as `<plan>`
@@ -63,14 +62,13 @@ Additional context: <additional-context>
     - `Revise` - update the plan based on feedback
 - custom answers enabled so the user can provide specific plan changes
 - If the user requests changes, store that feedback as `<user-answer>`
-<dispatch agent="planner">
-/ticket/plan
+<session_command agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Current plan: <plan>
 Plan feedback: <user-answer>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
 - Store the revised result as `<plan>` and continue the review loop
 - If the revised planner result is blocked or unusable, store that blocker as `<pause-reason>`, then STOP and report it before continuing the review loop
@@ -79,26 +77,24 @@ Additional context: <additional-context>
 
 ### Delegate Implementation
 
-<dispatch agent="worker">
-/dev
+<session_command agent="worker" command="dev">
 Plan: <plan>
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
-- Store the subagent result as `<implementation-result>`
+- Store the dispatch result as `<implementation-result>`
 - If `<implementation-result>` is incomplete, blocked, or fails validation, store the issue as `<pause-reason>`, then STOP and report it without marking the task complete
 
 ### Delegate Commit
 
-<dispatch agent="worker">
-/commit
+<session_command agent="worker" command="commit">
 Task: <task>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
-- Store the subagent result as `<commit-result>`
+- Store the dispatch result as `<commit-result>`
 - If `<commit-result>` does not succeed, store the commit status as `<pause-reason>`, then STOP and report it without marking the task complete
 
 ### Mark Complete And Loop

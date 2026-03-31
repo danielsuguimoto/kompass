@@ -8,6 +8,7 @@ Kompass uses structured tools to keep workflows grounded in repository and GitHu
 Current built-in tools:
 
 - `changes_load`
+- `session_command`
 - `pr_load`
 - `pr_sync`
 - `ticket_load`
@@ -18,6 +19,10 @@ Current built-in tools:
 ### `changes_load`
 
 Loads either uncommitted worktree changes or a base/head git comparison, returning structured file diffs and optional commit metadata.
+
+### `session_command`
+
+Resolves an explicit command plus body into a rendered prompt and queues that prompt back into the current session.
 
 ### `pr_load`
 

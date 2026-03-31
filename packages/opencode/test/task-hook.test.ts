@@ -2,14 +2,13 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  expandSlashCommandPrompt,
   getCommandExecution,
   getTaskToolExecution,
   removeSyntheticAgentHandoff,
 } from "../index.ts";
 
 describe("getTaskToolExecution", () => {
-  test("expands slash commands for task tool calls", async () => {
+  test("keeps raw task prompts unchanged", async () => {
     const output = {
       args: {
         prompt: "/review auth bug",
@@ -25,20 +24,16 @@ describe("getTaskToolExecution", () => {
         callID: "call-1",
       },
       output,
-      process.cwd(),
     );
 
+    assert.equal(execution?.prompt, "/review auth bug");
     assert.equal(execution?.raw_prompt, "/review auth bug");
     assert.equal(execution?.description, "Run review command");
     assert.equal(execution?.subagent_type, "reviewer");
     assert.equal(execution?.command, "@reviewer /review auth bug");
-    assert.equal(execution?.command_name, "review");
-    assert.equal(execution?.command_arguments, "auth bug");
-    assert.match(execution?.prompt ?? "", /<arguments>\s*auth bug\s*<\/arguments>/);
-    assert.equal(output.args.prompt, execution?.prompt);
   });
 
-  test("prefers the raw prompt over summarized command metadata", async () => {
+  test("prefers the raw prompt over command metadata", async () => {
     const output = {
       args: {
         prompt: "/review auth bug with multiline\nextra context",
@@ -55,12 +50,10 @@ describe("getTaskToolExecution", () => {
         callID: "call-1",
       },
       output,
-      process.cwd(),
     );
 
-    assert.equal(execution?.command_name, "review");
-    assert.equal(execution?.command_arguments, "auth bug with multiline\nextra context");
-    assert.match(execution?.prompt ?? "", /<arguments>\s*auth bug with multiline\nextra context\s*<\/arguments>/);
+    assert.equal(execution?.prompt, "/review auth bug with multiline\nextra context");
+    assert.equal(execution?.command, "@reviewer /review auth bug");
   });
 
   test("ignores non-task tool calls", async () => {
@@ -75,7 +68,6 @@ describe("getTaskToolExecution", () => {
           prompt: "should not be read",
         },
       },
-      process.cwd(),
     );
 
     assert.equal(execution, undefined);
@@ -94,13 +86,12 @@ describe("getTaskToolExecution", () => {
           subagent_type: "planner",
         },
       },
-      process.cwd(),
     );
 
     assert.equal(execution, undefined);
   });
 
-  test("falls back to the raw task prompt when the command is unknown", async () => {
+  test("returns the raw task prompt when the command is unknown", async () => {
     const execution = await getTaskToolExecution(
       {
         tool: "task",
@@ -113,15 +104,12 @@ describe("getTaskToolExecution", () => {
           command: "/unknown auth bug",
         },
       },
-      process.cwd(),
     );
 
     assert.deepEqual(execution, {
       prompt: "/unknown auth bug",
       raw_prompt: "/unknown auth bug",
       command: "/unknown auth bug",
-      command_name: undefined,
-      command_arguments: undefined,
       description: undefined,
       subagent_type: undefined,
     });
@@ -144,25 +132,11 @@ describe("getTaskToolExecution", () => {
         callID: "call-1",
       },
       output,
-      process.cwd(),
     );
 
+    assert.equal(execution?.prompt, "/branch Branch naming guidance: fix login redirect");
     assert.equal(execution?.command, "/branch Branch naming guidance: fix login redirect");
-    assert.equal(execution?.command_name, "branch");
-    assert.equal(execution?.command_arguments, "Branch naming guidance: fix login redirect");
-    assert.match(execution?.prompt ?? "", /## Goal/);
-    assert.match(execution?.prompt ?? "", /<arguments>\s*Branch naming guidance: fix login redirect\s*<\/arguments>/);
-    assert.equal(output.args.prompt, execution?.prompt);
-  });
-});
-
-describe("expandSlashCommandPrompt", () => {
-  test("expands command templates using slash command arguments", async () => {
-    const execution = await expandSlashCommandPrompt(process.cwd(), "@general /review asd");
-
-    assert.deepEqual(execution?.command, "review");
-    assert.deepEqual(execution?.arguments, "asd");
-    assert.match(execution?.prompt ?? "", /<arguments>\s*asd\s*<\/arguments>/);
+    assert.equal(output.args.prompt, undefined);
   });
 });
 

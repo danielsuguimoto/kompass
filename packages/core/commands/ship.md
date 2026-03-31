@@ -1,10 +1,10 @@
 ## Goal
 
-Ship the current work by delegating branch creation, commit creation, and PR creation.
+Ship the current work by dispatching branch creation, commit creation, and PR creation in the current session.
 
 ## Additional Context
 
-Use `<branch-context>` to steer delegated branch naming. Use `<additional-context>` to refine the delegated commit and PR summaries. Pass `<base>` through to PR creation when it was provided. This command is delegation-first: send each `<dispatch>` body literally and use the subagent result as the source of truth for the next step.
+Use `<branch-context>` to steer dispatched branch naming. Use `<additional-context>` to refine the dispatched commit and PR summaries. Pass `<base>` through to PR creation when it was provided. This command is session-command-first: send each `<session_command>` body literally through `session_command` and use the result as the source of truth for the next step.
 
 ## Workflow
 
@@ -23,24 +23,22 @@ $ARGUMENTS
 
 ### Ensure Feature Branch
 
-<dispatch agent="worker">
-/branch
+<session_command agent="worker" command="branch">
 Branch naming guidance: <branch-context>
-</dispatch>
+</session_command>
 
-- Store the subagent result as `<branch-result>`
+- Store the dispatch result as `<branch-result>`
 - If `<branch-result>` is blocked or incomplete, STOP and report the branch blocker
 - If `<branch-result>` says there was nothing to branch from, continue without changing branches
 - Otherwise, continue with the created branch
 
 ### Delegate Commit
 
-<dispatch agent="worker">
-/commit
+<session_command agent="worker" command="commit">
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
-- Store the subagent result as `<commit-result>`
+- Store the dispatch result as `<commit-result>`
 
 - If `<commit-result>` says there was nothing to commit, continue without creating a new commit
 - If `<commit-result>` is blocked or incomplete, STOP and report the commit blocker
@@ -48,13 +46,12 @@ Additional context: <additional-context>
 
 ### Delegate PR Creation
 
-<dispatch agent="worker">
-/pr/create
+<session_command agent="worker" command="pr/create">
 Base branch: <base>
 Additional context: <additional-context>
-</dispatch>
+</session_command>
 
-- Store the subagent result as `<pr-result>`
+- Store the dispatch result as `<pr-result>`
 
 - If `<pr-result>` is blocked or incomplete, STOP and report the PR blocker
 - If `<pr-result>` says there is nothing to include in a PR, STOP and report that there is nothing to ship

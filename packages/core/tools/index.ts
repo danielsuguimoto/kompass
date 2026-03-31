@@ -5,18 +5,20 @@ import {
   mergeWithDefaults,
 } from "../lib/config.ts";
 import { createChangesLoadTool } from "./changes-load.ts";
+import { createSessionCommandTool } from "./dispatch.ts";
 import { createPrLoadTool } from "./pr-load.ts";
 import { createPrSyncTool } from "./pr-sync.ts";
 import { createTicketLoadTool } from "./ticket-load.ts";
 import { createTicketSyncTool } from "./ticket-sync.ts";
 import type { Shell, ToolDefinition } from "./shared.ts";
 
-const toolCreators: Record<string, ($: Shell) => ToolDefinition> = {
-  changes_load: createChangesLoadTool,
-  pr_load: createPrLoadTool,
-  pr_sync: createPrSyncTool,
-  ticket_sync: createTicketSyncTool,
-  ticket_load: createTicketLoadTool,
+const toolCreators: Record<string, ($: Shell, projectRoot: string) => ToolDefinition> = {
+  changes_load: ($) => createChangesLoadTool($),
+  session_command: (_, projectRoot) => createSessionCommandTool(projectRoot),
+  pr_load: ($) => createPrLoadTool($),
+  pr_sync: ($) => createPrSyncTool($),
+  ticket_sync: ($) => createTicketSyncTool($),
+  ticket_load: ($) => createTicketLoadTool($),
 };
 
 export async function createTools($: Shell, projectRoot: string) {
@@ -28,7 +30,7 @@ export async function createTools($: Shell, projectRoot: string) {
   for (const toolName of getEnabledToolNames(config.tools)) {
     const creator = toolCreators[toolName];
     if (creator) {
-      tools[getConfiguredToolName(config.tools, toolName)] = creator($);
+      tools[getConfiguredToolName(config.tools, toolName)] = creator($, projectRoot);
     }
   }
 

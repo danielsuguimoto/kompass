@@ -35,7 +35,7 @@ describe("applyAgentsConfig", () => {
     assert.equal(cfg.agent.worker?.mode, undefined);
     assert.equal(
       cfg.agent.navigator?.description,
-      "Coordinate structured multi-step workflows by delegating focused leaf work to subagents.",
+      "Coordinate structured multi-step workflows and run focused slash-command steps in the current session.",
     );
     assert.deepEqual(cfg.agent.navigator?.permission, {
       edit: "deny",
@@ -54,9 +54,10 @@ describe("applyAgentsConfig", () => {
       todowrite: "allow",
     });
     assert.equal(cfg.agent.worker?.prompt, undefined);
-    assert.match(cfg.agent.navigator?.prompt ?? "", /navigation specialist/i);
-    assert.match(cfg.agent.navigator?.prompt ?? "", /delegate only explicit leaf tasks/i);
-    assert.match(cfg.agent.navigator?.prompt ?? "", /complete the local steps first/i);
+    assert.match(cfg.agent.navigator?.prompt ?? "", /structured, multi-step workflows/i);
+    assert.match(cfg.agent.navigator?.prompt ?? "", /call `?kompass_session_command`?/i);
+    assert.match(cfg.agent.navigator?.prompt ?? "", /manage step order/i);
+    assert.match(cfg.agent.navigator?.prompt ?? "", /<kompass_session_command agent=/i);
     assert.match(cfg.agent.reviewer?.prompt ?? "", /Never switch branches/i);
   });
 

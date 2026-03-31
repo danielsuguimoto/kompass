@@ -15,7 +15,7 @@ Generic worker role with minimal built-in behavior. It is the default execution 
 
 ### `navigator`
 
-Owns structured multi-step workflows locally, preserves state and stop conditions, and forwards literal `<dispatch>` bodies to subagents when commands require delegation.
+Owns structured multi-step workflows locally, preserves state and stop conditions, and forwards literal `<session_command>` blocks through the `session_command` tool when commands require queued same-session work.
 
 ### `planner`
 

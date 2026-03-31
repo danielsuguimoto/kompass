@@ -7,7 +7,7 @@ Kompass ships workflow-oriented commands authored as explicit templates in `pack
 
 ## Groups
 
-- Core: `/ask`, `/branch`, `/commit`, `/commit-and-push`, `/learn`, `/rmslop`
+- Core: `/ask`, `/branch`, `/commit`, `/commit-and-push`, `/learn`, `/merge`, `/rmslop`
 - Ticket: `/ticket/ask`, `/ticket/create`, `/ticket/dev`, `/ticket/plan`, `/ticket/plan-and-sync`
 - PR: `/pr/create`, `/pr/fix`, `/pr/review`, `/review`
 - Orchestration: `/dev`, `/ship`, `/todo`
@@ -16,7 +16,7 @@ Kompass ships workflow-oriented commands authored as explicit templates in `pack
 
 - each command is a documented workflow, not an opaque prompt
 - placeholders like `<arguments>`, `<plan>`, and `<ticket-url>` are normalized before execution
-- navigator workflows orchestrate locally and delegate focused leaf work with literal `<dispatch>` blocks
+- navigator workflows orchestrate locally and queue focused leaf work with literal `<session_command>` blocks
 - outputs are deterministic, reviewable, and usually terminal
 
 ## Core workflows
@@ -61,6 +61,14 @@ Extracts non-obvious learnings from the current session and documents them into 
 - arguments: optional focus scope or extra guidance
 - expected tools: `read`, file edit tools
 
+### `/merge`
+
+Merges a provided branch into the current branch, defaulting to the repo base branch, and resolves conflicts with a best-effort preference for the incoming branch.
+
+- usage: `/merge [source-or-guidance]`
+- arguments: optional merge source branch or ref plus additional merge guidance
+- expected tools: `git status`, `git merge`, file-edit tools for conflict resolution, `git add`, `git merge --continue`
+
 ### `/rmslop`
 
 Removes AI-generated code slop and inconsistencies from branch changes.
@@ -93,7 +101,7 @@ Implements a ticket by orchestrating `/dev`, `/branch`, `/commit-and-push`, and 
 
 - usage: `/ticket/dev <ticket-reference>`
 - arguments: ticket reference, URL, file path, or raw request
-- expected tools: `ticket_load`, delegated `/dev`, delegated `/branch`, delegated `/commit-and-push`, delegated `/pr/create`
+- expected tools: `ticket_load`, `session_command(dev)`, `session_command(branch)`, `session_command(commit-and-push)`, `session_command(pr/create)`
 
 ### `/ticket/plan`
 
@@ -161,7 +169,7 @@ Ships current work by delegating branch creation, commit creation, and PR creati
 
 - usage: `/ship [context]`
 - arguments: optional base branch, branch naming guidance, or additional shipping context
-- expected tools: delegated `/branch`, delegated `/commit`, delegated `/pr/create`
+- expected tools: `session_command(branch)`, `session_command(commit)`, `session_command(pr/create)`
 
 ### `/todo`
 
@@ -169,4 +177,4 @@ Works through a todo file one pending item at a time with planning, approval, im
 
 - usage: `/todo [@todo-file]`
 - arguments: optional `@file` reference and execution guidance; defaults to `@TODO.md`
-- expected tools: `read`, delegated `/ticket/plan`, `question`, delegated `/dev`, delegated `/commit`
+- expected tools: `read`, `question`, `session_command(ticket/plan)`, `session_command(dev)`, `session_command(commit)`

@@ -1,0 +1,38 @@
+---
+title: /merge
+description: Merge a branch into the current branch with best-effort conflict resolution.
+---
+
+## Purpose
+
+Use `/merge` to merge another branch or ref into the current branch and keep moving when conflicts can be resolved confidently.
+
+## Usage
+
+```text
+/merge [source-or-guidance]
+```
+
+## Typical flow
+
+- resolve the merge source from arguments or the repo base branch
+- stop when the working tree is dirty or the source ref cannot be found
+- run `git merge <source>`
+- if conflicts appear, resolve them file by file and stage each resolved file explicitly
+- finish with `git merge --continue` only after all conflicts are staged and resolved
+
+## Common tools
+
+- `bash(git status)`
+- `bash(git merge)`
+- file edit tools
+- `bash(git add)`
+- `bash(git merge --continue)`
+
+## Output
+
+- `Merge blocked: working tree is not clean`
+- `Merge blocked: source branch not found`
+- `Merge skipped: already on <current-branch>`
+- `Merge blocked: unresolved conflicts remain`
+- `Merged <merge-source> into <current-branch>` with the merge commit hash
