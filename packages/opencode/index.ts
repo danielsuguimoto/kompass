@@ -186,7 +186,7 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
     });
 
     return tool({
-      description: "Resolve a command and body and queue it in the current session",
+      description: "Queue a delegated command asynchronously in the current session. Returns only an enqueue acknowledgement, never the delegated command result.",
       args: {
         command: tool.schema.string().describe("Command name to execute, without the leading slash"),
         body: tool.schema.string().describe("Literal body content from the session_command block").optional(),
@@ -208,13 +208,9 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
           prompt: string;
           expanded: boolean;
         };
-        const dispatched = await executeSessionCommand(client, context, resolved);
+        await executeSessionCommand(client, context, resolved);
 
-        return JSON.stringify({
-          ...resolved,
-          queued: true,
-          mode: dispatched.mode,
-        });
+        return "Delegated command scheduled asynchronously. A synthetic user message was added to the current session. Continue from that delegated turn, not from this acknowledgement.";
       },
     });
   },

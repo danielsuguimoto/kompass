@@ -277,24 +277,19 @@ describe("createOpenCodeTools", () => {
         },
       );
 
-      const result = JSON.parse(output);
-
-      assert.equal(result.agent, "reviewer");
-      assert.equal(result.command, "review");
-      assert.equal(result.body, "auth bug");
-      assert.equal(result.expanded, true);
-      assert.equal(result.queued, true);
-      assert.equal(result.mode, "prompt_async");
-      assert.match(result.prompt, /kompass_changes_load/);
-      assert.doesNotMatch(result.prompt, /`changes_load`/);
+      assert.match(output, /Delegated command scheduled asynchronously/);
+      assert.match(output, /Continue from that delegated turn/);
       assert.equal(client.sessionCommands.length, 0);
       assert.equal(client.sessionPromptAsyncs.length, 1);
+      const queuedPrompt = String((((client.sessionPromptAsyncs[0].body ?? {}) as any).parts ?? [])[0]?.text ?? "");
+      assert.match(queuedPrompt, /kompass_changes_load/);
+      assert.doesNotMatch(queuedPrompt, /`changes_load`/);
       assert.deepEqual(client.sessionPromptAsyncs[0], {
         path: { id: "session-1" },
         query: { directory: process.cwd() },
         body: {
           agent: "reviewer",
-          parts: [{ type: "text", text: result.prompt, synthetic: true }],
+          parts: [{ type: "text", text: queuedPrompt, synthetic: true }],
         },
       });
       assert.equal(client.sessionPrompts.length, 0);

@@ -28,8 +28,9 @@ Branch naming guidance: <branch-context>
 </session_command>
 
 - Store the dispatch result as `<branch-result>`
+- If `<branch-result>` says there was nothing to branch from, continue on the current branch
+- If `<branch-result>` says branching was skipped because the current branch already looks like a work branch, continue on the current branch
 - If `<branch-result>` is blocked or incomplete, STOP and report the branch blocker
-- If `<branch-result>` says there was nothing to branch from, continue without changing branches
 - Otherwise, continue with the created branch
 
 ### Delegate Commit

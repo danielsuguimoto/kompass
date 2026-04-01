@@ -82,7 +82,7 @@ export function createSessionCommandTool(
   options?: ResolveSessionCommandOptions,
 ) {
   return {
-    description: "Resolve a command and body for same-session queuing",
+    description: "Resolve a delegated command body for same-session async queuing",
     args: {
       command: {
         type: "string",
