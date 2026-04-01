@@ -71,6 +71,7 @@ describe("applyCommandsConfig", () => {
       assert.equal(cfg.command!["dev"]?.agent, "navigator");
       assert.equal(cfg.command!["ship"]?.agent, "navigator");
       assert.equal(cfg.command!["todo"]?.agent, "navigator");
+      assert.equal(cfg.command!["ticket/dev"]?.agent, "navigator");
       assert.ok(cfg.command!["pr/review"]?.description);
       assert.ok(cfg.command!["dev"]?.template);
       assert.ok(cfg.command!["branch"]?.template);
