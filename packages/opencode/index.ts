@@ -88,7 +88,8 @@ async function executeSessionCommand(
     query: { directory: context.directory },
     body: {
       ...(sessionCommand.agent ? { agent: sessionCommand.agent } : {}),
-      parts: [{ type: "text", text: sessionCommand.prompt }],
+      // Queue the delegated turn without surfacing the prompt as a normal user message.
+      parts: [{ type: "text", text: sessionCommand.prompt, synthetic: true }],
     },
   });
 
