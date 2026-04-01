@@ -27,7 +27,8 @@ bun run test
   - runtime definitions in `packages/core`
   - bundled config in `kompass.jsonc`, `packages/core/kompass.jsonc`, and `packages/opencode/kompass.jsonc`
   - schema in `kompass.schema.json`
-  - user-facing docs in `README.md` and adapter/package docs that describe the changed surface
+  - user-facing docs in `README.md`, adapter/package docs, and the web docs under `packages/web/src/content/docs/` that describe the changed surface
+  - web marketing and homepage surfaces that showcase commands or agents, especially `packages/web/src/pages/index.astro` and `packages/web/src/components/CommandShowcase.astro`
   - generated OpenCode output under `packages/opencode/.opencode/` when the source change affects compiled artifacts
 - If no validation was run in the current session, say that clearly instead of implying the branch was tested.
 
@@ -51,7 +52,7 @@ packages/opencode/.opencode/ # Generated OpenCode output for review
 ## Command Authoring
 
 - Author command definitions in `packages/core/commands/`; treat `packages/opencode/.opencode/commands/` as generated output only
-- Treat `packages/core/commands/index.ts`, `packages/core/lib/config.ts`, `kompass.schema.json`, the bundled `kompass.jsonc` files, and the relevant docs as a linked surface area; if one changes, verify the others still describe the same command set and config shape
+- Treat `packages/core/commands/index.ts`, `packages/core/lib/config.ts`, `kompass.schema.json`, the bundled `kompass.jsonc` files, the relevant docs, and any web showcase/homepage surfaces as a linked surface area; if one changes, verify the others still describe the same command set, agent ownership, examples, and config shape
 - Use `packages/core/commands/pr/create.md` as the canonical example for command structure and tone
 - Keep this section order in command docs unless a command has a strong reason not to: `## Goal`, `## Additional Context`, `## Workflow`
 - Keep `### Output` as the final subsection inside `## Workflow`; do not use a separate top-level `## Output` section
@@ -69,8 +70,9 @@ packages/opencode/.opencode/ # Generated OpenCode output for review
 - When a command can pause for approval or loop over repeated work, describe the resume condition and the exact cases that must STOP without mutating state
 - Use `## Additional Context` for instructions about how optional guidance, related tickets, focus areas, or other stored context should influence analysis and response formatting
 - Use `### Output` as the final workflow step to define the exact user-facing response shape, including placeholders for generated values
-- Make success, blocked, and no-op outcomes explicit in `### Output` or the surrounding workflow so navigator-led flows report deterministic end states
+- Make success, blocked, no-op, waiting, and resume-required outcomes explicit in `### Output` or the surrounding workflow so navigator-led flows report deterministic end states
 - For terminal command outcomes, prefer an explicit final line inside the output block: `No additional steps are required.`
+- Omit that final line for outputs that intentionally wait for approval, pause for resume, loop to the next task, or otherwise continue beyond the current checkpoint
 - For one-off commands that do not orchestrate follow-up work, make every success, blocked, or no-op output explicitly terminal with that final line
 - Command-specific extra sections are fine, but they should support this core structure rather than replace it
 
@@ -128,7 +130,7 @@ Constraints: <additional-context>
 ### Output
 
 - Define the exact success, blocked, and no-op response shapes
-- For terminal outcomes, end the output block with `No additional steps are required.`
+- For terminal outcomes, end the output block with `No additional steps are required.` Omit that line when the command is intentionally waiting, looping, or continuing.
 ```
 
 Example delegation rule:
