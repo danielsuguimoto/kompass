@@ -294,7 +294,7 @@ describe("createOpenCodeTools", () => {
         query: { directory: process.cwd() },
         body: {
           agent: "reviewer",
-          parts: [{ type: "text", text: result.prompt }],
+          parts: [{ type: "text", text: result.prompt, synthetic: true }],
         },
       });
       assert.equal(client.sessionPrompts.length, 0);
