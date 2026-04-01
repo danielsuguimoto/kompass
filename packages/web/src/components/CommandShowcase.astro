@@ -68,7 +68,7 @@ const scenarios: CommandScenario[] = [
     id: 'commit',
     label: '/commit',
     command: '/commit tighten command docs',
-    agentName: 'Navigator',
+    agentName: 'Worker',
     task: 'Create a commit from uncommitted work',
     group: 'core',
     steps: [
@@ -205,7 +205,7 @@ const scenarios: CommandScenario[] = [
     id: 'ticket-dev',
     label: '/ticket/dev',
     command: '/ticket/dev #42',
-    agentName: 'Worker',
+    agentName: 'Navigator',
     task: 'Implement a ticket through PR creation',
     group: 'ticket',
     steps: [
