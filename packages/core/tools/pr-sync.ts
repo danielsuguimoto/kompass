@@ -51,6 +51,18 @@ type PrSyncArgs = {
   commentBody?: string;
 };
 
+function normalizeReviewInput(review?: ReviewInput): ReviewInput | undefined {
+  if (!review) {
+    return undefined;
+  }
+
+  const hasBody = Boolean(review.body?.trim());
+  const hasComments = (review.comments?.length ?? 0) > 0;
+  const hasApprove = "approve" in review && review.approve === true;
+
+  return hasBody || hasComments || hasApprove ? review : undefined;
+}
+
 function renderPrBody(args: PrSyncArgs) {
   if (args.body?.trim()) {
     return args.body.trim();
@@ -400,12 +412,12 @@ export function createPrSyncTool($: Shell) {
       commitId: {
         type: "string",
         optional: true,
-        description: "Commit ID to associate with the approval",
+        description: "Commit SHA to anchor review comments to; omit unless sending review comments",
       },
       review: {
         type: "json",
         optional: true,
-        description: "Structured PR review submission with event, optional body, commitId, and inline comments",
+        description: "Optional structured PR review submission; omit the field entirely unless submitting a review body, inline comments, or approval",
       },
       replies: {
         type: "json",
@@ -420,7 +432,7 @@ export function createPrSyncTool($: Shell) {
     },
     async execute(args: PrSyncArgs, ctx: ToolExecutionContext) {
       const body = renderPrBody(args);
-      const review = args.review;
+      const review = normalizeReviewInput(args.review);
       const metadataUpdate = hasMetadataUpdate(args, body);
       const existingPrActions = requiresExistingPullRequest(args, review);
 

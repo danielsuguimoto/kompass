@@ -203,7 +203,7 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
         })).describe("Checklist sections rendered as markdown").optional(),
         draft: tool.schema.boolean().describe("Create as draft PR").optional(),
         refUrl: tool.schema.string().describe("Optional PR URL to update").optional(),
-        commitId: tool.schema.string().describe("Commit SHA to anchor review comments to").optional(),
+        commitId: tool.schema.string().describe("Commit SHA to anchor review comments to; omit unless sending review comments").optional(),
         review: tool.schema.object({
           body: tool.schema.string().describe("Optional review summary body").optional(),
           comments: tool.schema.array(tool.schema.object({
@@ -218,7 +218,7 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
             ? { approve: tool.schema.boolean().describe("Approve the PR with this review comment").optional() }
             : {}
           ),
-        }).describe("Structured review submission").optional(),
+        }).describe("Optional structured review submission; omit the field entirely unless submitting a review body, inline comments, or approval").optional(),
         replies: tool.schema.array(tool.schema.object({
           inReplyTo: tool.schema.number().int().describe("Existing review comment ID to reply to"),
           body: tool.schema.string().describe("Reply body"),

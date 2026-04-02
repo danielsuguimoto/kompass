@@ -56,6 +56,7 @@ export const commandDefinitions: Record<string, CommandDefinition> = {
     description: "Fix PR feedback, push updates, and reply",
     agent: "worker",
     templatePath: "commands/pr/fix.md",
+    subtask: false,
   },
   "pr/review": {
     description: "Review the current PR and publish review feedback",

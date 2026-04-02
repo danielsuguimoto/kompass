@@ -340,6 +340,7 @@ describe("applyCommandsConfig", () => {
       await applyCommandsConfig(cfg as never, process.cwd());
 
       assert.ok(cfg.command);
+      assert.equal(cfg.command!["pr/fix"]?.subtask, false);
       assert.equal(cfg.command!["pr/review"]?.subtask, true);
       assert.equal(cfg.command!["dev"]?.subtask, true);
       assert.equal(cfg.command!["ship"]?.subtask, true);
@@ -353,6 +354,7 @@ describe("applyCommandsConfig", () => {
       await applyCommandsConfig(cfg as never, process.cwd());
 
       assert.ok(cfg.command);
+      assert.equal(cfg.command!["pr/fix"]?.subtask, false);
       assert.equal(cfg.command!["pr/review"]?.subtask, false);
       assert.equal(cfg.command!["dev"]?.subtask, false);
       assert.equal(cfg.command!["ship"]?.subtask, false);

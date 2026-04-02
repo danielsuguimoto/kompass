@@ -142,6 +142,8 @@ Run `git push` and use its output as the source of truth.
 ### Create PR
 
 Use `kompass_pr_sync` to create the pull request:
+- This step is PR creation only
+- Omit `review`, `replies`, `commentBody`, and `commitId` entirely unless you are intentionally updating or reviewing an existing PR instead of creating one
 - Generate a concise title (max 70 chars) summarizing the change and store it as `<pr-title>`
 - Generate a short description that briefly describes the intent and scope
 - Pass `<current-branch>` as `head` when it is available so PR creation does not depend on local upstream inference
