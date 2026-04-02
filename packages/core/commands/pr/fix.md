@@ -28,6 +28,16 @@ $ARGUMENTS
 
 <%~ include("@load-pr", { ref: "<pr-ref>", result: "<pr-context>" }) %>
 
+### Align Local Branch
+
+- If `<pr-branch>` is unavailable, STOP and report that the PR head branch could not be determined
+- If `<current-branch>` differs from `<pr-branch>`:
+  - Checkout `<pr-branch>` before analyzing repository files or making code changes for this PR
+  - After checkout, store the active branch as `<active-branch>`
+  - If checkout fails, STOP and report that the PR branch could not be checked out locally
+- Otherwise, store `<current-branch>` as `<active-branch>`
+- Do not inspect or modify local code for this PR until `<active-branch>` equals `<pr-branch>`
+
 ### Analyze Feedback
 
 Separate true course corrections from noise or already-resolved feedback:
@@ -42,9 +52,10 @@ Do not blindly follow every suggestion—some may lead you off course.
 
 1. Fix critical navigation issues first
 2. Follow existing code patterns and conventions
-3. Make focused, minimal changes
-4. When maintaining your current heading despite a suggestion, be prepared to explain why
-5. Store the modified-file count as `<changes-count>`
+3. Use `<active-branch>` as the working branch for every local code read or edit in this command
+4. Make focused, minimal changes
+5. When maintaining your current heading despite a suggestion, be prepared to explain why
+6. Store the modified-file count as `<changes-count>`
 
 ### Validate Changes
 
