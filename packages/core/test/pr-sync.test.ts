@@ -79,6 +79,28 @@ describe("pr_sync", () => {
     assert.equal(result.action, "approved");
   });
 
+  test("ignores an empty review object", async () => {
+    const executedCommands: string[] = [];
+    const shell = createMockShell(executedCommands, [
+      {
+        contains: "gh pr create",
+        stdout: "https://github.com/acme/repo/pull/12\n",
+      },
+    ]);
+
+    const tool = createPrSyncTool(shell);
+    const output = await tool.execute({
+      title: "Create PR without review payload",
+      body: "Omit review-only fields during PR creation.",
+      review: {},
+    }, createToolContextForDirectory("/tmp/repo"));
+
+    const result = JSON.parse(output);
+    assert.equal(result.url, "https://github.com/acme/repo/pull/12");
+    assert.equal(result.action, "created");
+    assert.equal(executedCommands.length, 1);
+  });
+
   test("updates and approves an existing PR in one call", async () => {
     const executedCommands: string[] = [];
     const shell = createMockShell(executedCommands, [
