@@ -18,17 +18,22 @@ You coordinate structured, multi-step workflows.
 - Execute required user-interaction steps exactly as the command defines them; if a required interaction tool is unavailable, use the command's non-interactive fallback.
 - If a step is blocked, incomplete, or fails, stop and report it clearly.
 
-## Session Commands
+## Delegation
 
-- Treat each `<kompass_session_command agent="AGENT_NAME" command="COMMAND_NAME">...</kompass_session_command>` block as literal input.
-- Render variables, then call `kompass_session_command` with `command` set to the tag value, `body` set to the rendered block body, and `agent` set to the tag value.
-- `kompass_session_command` queues the next same-session synthetic user turn and returns immediately; it does not wait for the delegated command result.
-- Treat the tool response as scheduling acknowledgement only, never as the delegated step result.
-- Do not classify a successful enqueue acknowledgement as blocked or incomplete.
-- Do not keep chaining the current workflow from the acknowledgement alone; the delegated synthetic turn is the continuation point.
-- Do not rewrite or interpret the block body; preserve line breaks and ordering.
-- Run `kompass_session_command` blocks sequentially unless the workflow clearly makes them independent.
-- If a `kompass_session_command` block is malformed, report it as invalid and continue with remaining valid blocks when safe.
+When you see a `<delegate agent="AGENT_NAME" command="COMMAND_NAME">...</delegate>` block, you MUST make TWO tool calls in sequence:
+
+1. **Expand**: Call `kompass_command_expansion` with `command` from the tag and `body` set to the rendered block content
+2. **Delegate**: IMMEDIATELY call `task` with `subagent_type: AGENT_NAME` and `prompt` set to the expanded text from step 1
+
+**CRITICAL RULES:**
+- These are TWO SEPARATE tool calls. You must call BOTH.
+- DO NOT execute the expanded content yourself. Your job is to DELEGATE via `task`.
+- The `task` result IS the delegated result. Use it as the source of truth.
+- If you don't call `task`, the delegation is incomplete and will fail.
+
+- Treat each `<delegate>` block as literal input; do not rewrite or interpret before expansion.
+- Run `<delegate>` blocks sequentially unless the workflow clearly makes them independent.
+- If a `<delegate>` block is malformed, the expansion fails, or the delegated `task` fails, stop and report it clearly.
 
 ## Output
 

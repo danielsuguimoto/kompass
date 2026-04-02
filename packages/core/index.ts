@@ -17,8 +17,8 @@ export type {
 } from "./lib/config.ts";
 export { createTools } from "./tools/index.ts";
 export { createChangesLoadTool } from "./tools/changes-load.ts";
-export { createSessionCommandTool, resolveSessionCommand } from "./tools/dispatch.ts";
-export type { SessionCommandResolution } from "./tools/dispatch.ts";
+export { createCommandExpansionTool, resolveCommandExpansion } from "./tools/dispatch.ts";
+export type { CommandExpansion } from "./tools/dispatch.ts";
 export { createPrLoadTool } from "./tools/pr-load.ts";
 export { createPrSyncTool } from "./tools/pr-sync.ts";
 export { createTicketLoadTool } from "./tools/ticket-load.ts";

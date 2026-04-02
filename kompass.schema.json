@@ -184,7 +184,7 @@
         "changes_load": {
           "$ref": "#/$defs/toolConfig"
         },
-        "session_command": {
+        "command_expansion": {
           "$ref": "#/$defs/toolConfig"
         },
         "pr_load": {
@@ -361,7 +361,7 @@
       "type": "string",
       "enum": [
         "changes_load",
-        "session_command",
+        "command_expansion",
         "pr_load",
         "pr_sync",
         "ticket_sync",

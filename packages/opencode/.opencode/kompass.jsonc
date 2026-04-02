@@ -83,7 +83,7 @@
     "changes_load": {
       "enabled": true
     },
-    "session_command": {
+    "command_expansion": {
       "enabled": true
     },
     "pr_load": {

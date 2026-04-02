@@ -1,22 +1,20 @@
 import { resolveCommands } from "../commands/index.ts";
-import { stringifyJson, type ToolDefinition, type ToolExecutionContext } from "./shared.ts";
+import type { ToolDefinition, ToolExecutionContext } from "./shared.ts";
 
-export type SessionCommandResolution = {
-  agent?: string;
+export type CommandExpansion = {
   command: string;
   body: string;
   prompt: string;
   expanded: boolean;
 };
 
-type ResolveSessionCommandOptions = {
+type ResolveCommandExpansionOptions = {
   rewriteBody?: (body: string) => string;
 };
 
-type SessionCommandInput = {
+type CommandExpansionInput = {
   command: string;
   body?: string;
-  agent?: string;
 };
 
 function renderSlashCommand(command: string, body: string) {
@@ -37,16 +35,16 @@ function expandCommandTemplate(template: string, commandBody: string) {
   return expandedTemplate;
 }
 
-export async function resolveSessionCommand(
+export async function resolveCommandExpansion(
   projectRoot: string,
-  input: SessionCommandInput,
-  options?: ResolveSessionCommandOptions,
-): Promise<SessionCommandResolution> {
+  input: CommandExpansionInput,
+  options?: ResolveCommandExpansionOptions,
+): Promise<CommandExpansion> {
   const normalizedCommand = input.command.trim();
   const normalizedBody = input.body?.trim() ?? "";
 
   if (!normalizedCommand) {
-    throw new Error("session_command requires a command");
+    throw new Error("command_expansion requires a command");
   }
 
   const commands = await resolveCommands(projectRoot);
@@ -54,7 +52,6 @@ export async function resolveSessionCommand(
 
   if (!definition) {
     return {
-      ...(input.agent?.trim() ? { agent: input.agent.trim() } : {}),
       command: normalizedCommand,
       body: normalizedBody,
       prompt: renderSlashCommand(normalizedCommand, normalizedBody),
@@ -69,7 +66,6 @@ export async function resolveSessionCommand(
   }
 
   return {
-    agent: input.agent?.trim() || definition.agent,
     command: normalizedCommand,
     body: normalizedBody,
     prompt,
@@ -77,12 +73,12 @@ export async function resolveSessionCommand(
   };
 }
 
-export function createSessionCommandTool(
+export function createCommandExpansionTool(
   projectRoot: string,
-  options?: ResolveSessionCommandOptions,
+  options?: ResolveCommandExpansionOptions,
 ) {
   return {
-    description: "Resolve a delegated command body for same-session async queuing",
+    description: "Expand a delegated command body into a runnable prompt",
     args: {
       command: {
         type: "string",
@@ -91,19 +87,15 @@ export function createSessionCommandTool(
       body: {
         type: "string",
         optional: true,
-        description: "Literal body content from the session_command block",
-      },
-      agent: {
-        type: "string",
-        optional: true,
-        description: "Optional agent override from the session_command tag",
+        description: "Literal body content from the delegate block",
       },
     },
     async execute(
-      args: { command: string; body?: string; agent?: string },
+      args: { command: string; body?: string },
       _ctx: ToolExecutionContext,
     ) {
-      return stringifyJson(await resolveSessionCommand(projectRoot, args, options));
+      const resolved = await resolveCommandExpansion(projectRoot, args, options);
+      return resolved.prompt;
     },
-  } satisfies ToolDefinition<{ command: string; body?: string; agent?: string }>;
+  } satisfies ToolDefinition<{ command: string; body?: string }>;
 }

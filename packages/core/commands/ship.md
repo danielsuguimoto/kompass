@@ -4,7 +4,7 @@ Ship the current work by dispatching branch creation, commit creation, and PR cr
 
 ## Additional Context
 
-Use `<branch-context>` to steer dispatched branch naming. Use `<additional-context>` to refine the dispatched commit and PR summaries. Pass `<base>` through to PR creation when it was provided. This command is session-command-first: send each `<session_command>` body literally through `session_command` and use the result as the source of truth for the next step.
+Use `<branch-context>` to steer delegated branch naming. Use `<additional-context>` to refine the delegated commit and PR summaries. Pass `<base>` through to PR creation when it was provided.
 
 ## Workflow
 
@@ -21,13 +21,13 @@ $ARGUMENTS
 - If the trimmed `<arguments>` is only a branch reference (for example `main` or `origin/develop`), store it as `<base>` and leave the context fields empty
 - Otherwise, store `<arguments>` as both `<branch-context>` and `<additional-context>`
 
-### Ensure Feature Branch
+### Delegate Branch Creation
 
-<session_command agent="worker" command="branch">
+<delegate agent="worker" command="branch">
 Branch naming guidance: <branch-context>
-</session_command>
+</delegate>
 
-- Store the dispatch result as `<branch-result>`
+- Store the delegated result as `<branch-result>`
 - If `<branch-result>` says there was nothing to branch from, continue on the current branch
 - If `<branch-result>` says branching was skipped because the current branch already looks like a work branch, continue on the current branch
 - If `<branch-result>` is blocked or incomplete, STOP and report the branch blocker
@@ -35,25 +35,23 @@ Branch naming guidance: <branch-context>
 
 ### Delegate Commit
 
-<session_command agent="worker" command="commit">
+<delegate agent="worker" command="commit">
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the dispatch result as `<commit-result>`
-
+- Store the delegated result as `<commit-result>`
 - If `<commit-result>` says there was nothing to commit, continue without creating a new commit
 - If `<commit-result>` is blocked or incomplete, STOP and report the commit blocker
 - Otherwise, continue with the created commit
 
 ### Delegate PR Creation
 
-<session_command agent="worker" command="pr/create">
+<delegate agent="worker" command="pr/create">
 Base branch: <base>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the dispatch result as `<pr-result>`
-
+- Store the delegated result as `<pr-result>`
 - If `<pr-result>` is blocked or incomplete, STOP and report the PR blocker
 - If `<pr-result>` says there is nothing to include in a PR, STOP and report that there is nothing to ship
 - Otherwise, continue with the created or existing PR

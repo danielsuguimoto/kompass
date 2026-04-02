@@ -11,11 +11,11 @@ description: Orchestrator agent for structured multi-step workflows.
 
 - pause-and-resume workflows
 - stepwise orchestration such as `/ship`, `/todo`, and `/ticket/dev`
-- commands that mix local state handling with queued `session_command` leaf steps
+- commands that mix local state handling with delegated leaf steps
 
 ## Key behavior
 
-- forwards literal `<session_command agent="..." command="...">...</session_command>` bodies exactly after variable substitution
-- calls `session_command` with explicit `command`, `body`, and `agent`
-- queues the next same-session turn instead of waiting for the queued command result
+- forwards literal `<delegate agent="..." command="...">...</delegate>` bodies exactly after variable substitution
+- calls `command_expansion` with explicit `command` and `body`
+- immediately delegates the returned prompt through `task` and uses that task result as the step result
 - stops and reports blockers when the workflow itself cannot continue safely

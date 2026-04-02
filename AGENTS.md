@@ -64,9 +64,10 @@ packages/opencode/.opencode/ # Generated OpenCode output for review
 - For navigator-style commands, separate context loading, blocker checks, delegated execution, and final reporting into distinct workflow subsections so the control flow is easy to follow
 - Prefer explicit subsection names like `### Load ... Context`, `### Check Blockers`, `### Delegate ...`, and `### Mark Complete And Loop` when the command coordinates multiple phases or subagents
 - Treat loader tools and provided attachments as the source of truth for orchestration inputs; avoid extra exploratory commands when an existing tool result already answers the question
-- Before dispatching a same-session command step, say what result should be stored and whether the workflow must stop, pause, or continue based on that result
-- Use literal `<session_command>` tags when the workflow must queue exact text through `session_command`; `agent` and `command` are required, and the block body is the exact rendered body to send for that command
-- Do not use `<task>` blocks in command docs; author navigator delegation with `<session_command>` blocks only
+- Before dispatching a same-session command step, say what delegated result should be stored and whether the workflow must stop, pause, or continue based on that result
+- Use literal `<delegate>` tags when the workflow must delegate exact text through `command_expansion`; `agent` and `command` are required, and the block body is the exact rendered body to send for that command
+- Do not use `<task>` blocks in command docs; author navigator delegation with `<delegate>` blocks only
+- Do not restate `command_expansion` or `task` mechanics inside command docs; navigator owns that execution flow
 - When a command can pause for approval or loop over repeated work, describe the resume condition and the exact cases that must STOP without mutating state
 - Use `## Additional Context` for instructions about how optional guidance, related tickets, focus areas, or other stored context should influence analysis and response formatting
 - Use `### Output` as the final workflow step to define the exact user-facing response shape, including placeholders for generated values
@@ -107,24 +108,25 @@ $ARGUMENTS
 
 ### Delegate Planning
 
-<session_command agent="planner" command="ticket/plan">
+<delegate agent="planner" command="ticket/plan">
 
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the result as `<plan>`
+- Store the delegated result as `<plan>`
 - STOP if planning is blocked or unusable
 
 ### Delegate Implementation
 
-<session_command agent="worker" command="dev">
+<delegate agent="worker" command="dev">
 
 Plan: <plan>
 Constraints: <additional-context>
-</session_command>
+</delegate>
 
+- Store the delegated result as `<implementation-result>`
 - STOP if implementation is blocked or incomplete
 
 ### Output
@@ -136,13 +138,13 @@ Constraints: <additional-context>
 Example delegation rule:
 
 ```text
-Before dispatching, write the exact `<session_command ...>...</session_command>` block, say what queue acknowledgement should be stored, and whether the workflow should continue or STOP based on that acknowledgement.
+Before delegation, write the exact `<delegate ...>...</delegate>` block, say what delegated result should be stored, and whether the workflow should continue or STOP based on that result.
 ```
 
 Example literal session command rule:
 
 ```text
-Before literal command forwarding, write the exact `<session_command ...>...</session_command>` block, then call `session_command` with the rendered body, exact `agent`, and exact `command`, and say what queue acknowledgement should be stored and whether the workflow should continue or STOP based on that acknowledgement.
+Before literal command forwarding, write the exact `<delegate ...>...</delegate>` block, then let navigator expand and execute it, and say what delegated result should be stored and whether the workflow should continue or STOP based on that result.
 ```
 
 ## Component Authoring

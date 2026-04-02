@@ -8,6 +8,7 @@ Work through a todo file one pending item at a time by planning, getting approva
 - Do not merge separate todo items unless the file explicitly frames them as one task
 - If implementation reveals scope that materially changes the approved plan, pause and re-plan before marking the task complete
 - Use `<additional-context>` to prioritize tradeoffs, constraints, or validation expectations during planning and implementation
+- Delegate planner and worker steps through literal `<delegate>` blocks and use the delegated results as the source of truth for planning, implementation, and commit steps.
 
 ## Workflow
 
@@ -41,14 +42,13 @@ $ARGUMENTS
 
 ### Delegate Planning
 
-<session_command agent="planner" command="ticket/plan">
+<delegate agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Ask the planner for a concise implementation plan with clear scope, risks, and validation steps
-- Store the result as `<plan>`
+- Store the delegated result as `<plan>`
 - If the planner is blocked or cannot produce a usable plan, store the blocker as `<pause-reason>`, then STOP and report that planning blocker
 
 ### Review Plan With User
@@ -62,39 +62,42 @@ Additional context: <additional-context>
     - `Revise` - update the plan based on feedback
 - custom answers enabled so the user can provide specific plan changes
 - If the user requests changes, store that feedback as `<user-answer>`
-<session_command agent="planner" command="ticket/plan">
+- Only run the revised planning block below when the user requests changes
+- If the user approves the current plan, skip the revised planning block and continue to implementation
+
+<delegate agent="planner" command="ticket/plan">
 Task: <task>
 Task context: <task-context>
 Current plan: <plan>
 Plan feedback: <user-answer>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the revised result as `<plan>` and continue the review loop
+- Store the revised delegated result as `<plan>` and continue the review loop
 - If the revised planner result is blocked or unusable, store that blocker as `<pause-reason>`, then STOP and report it before continuing the review loop
 - Repeat this review step until the user approves or stops
 - If the user does not approve implementation, store `plan approval not granted` as `<pause-reason>`, then STOP without changing `<todo-file>`
 
 ### Delegate Implementation
 
-<session_command agent="worker" command="dev">
+<delegate agent="worker" command="dev">
 Plan: <plan>
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the dispatch result as `<implementation-result>`
+- Store the delegated result as `<implementation-result>`
 - If `<implementation-result>` is incomplete, blocked, or fails validation, store the issue as `<pause-reason>`, then STOP and report it without marking the task complete
 
 ### Delegate Commit
 
-<session_command agent="worker" command="commit">
+<delegate agent="worker" command="commit">
 Task: <task>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the dispatch result as `<commit-result>`
+- Store the delegated result as `<commit-result>`
 - If `<commit-result>` does not succeed, store the commit status as `<pause-reason>`, then STOP and report it without marking the task complete
 
 ### Mark Complete And Loop

@@ -4,7 +4,7 @@ Implement a ticket by orchestrating development, branching, commit-and-push, and
 
 ## Additional Context
 
-Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the dispatched `/dev`, `/branch`, `/commit-and-push`, and `/pr/create` steps.
+Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the delegated `/dev`, `/branch`, `/commit-and-push`, and `/pr/create` steps.
 
 ## Workflow
 
@@ -31,55 +31,47 @@ $ARGUMENTS
 
 ### Delegate Implementation
 
-- Before continuing, send the exact `session_command` block below through `session_command`
-
-<session_command agent="worker" command="dev">
+<delegate agent="worker" command="dev">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the result as `<implementation-result>`
+- Store the delegated result as `<implementation-result>`
 - If `<implementation-result>` is blocked or incomplete, STOP and report the implementation blocker
 
 ### Delegate Branch Creation
 
-- Before continuing, send the exact `session_command` block below through `session_command`
-
-<session_command agent="worker" command="branch">
+<delegate agent="worker" command="branch">
 Branch naming guidance: <ticket-summary>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the result as `<branch-result>`
+- Store the delegated result as `<branch-result>`
 - If `<branch-result>` is blocked or incomplete, STOP and report the branch blocker
 - If `<branch-result>` says branching was skipped because the current branch already looks like a work branch, continue
 
 ### Delegate Commit And Push
 
-- Before continuing, send the exact `session_command` block below through `session_command`
-
-<session_command agent="worker" command="commit-and-push">
+<delegate agent="worker" command="commit-and-push">
 Ticket reference: <ticket-ref>
 Ticket summary: <ticket-summary>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the result as `<commit-result>`
+- Store the delegated result as `<commit-result>`
 - If `<commit-result>` is blocked or incomplete, STOP and report the commit or push blocker
 - If `<commit-result>` says there was nothing to commit or push, continue to PR creation so already-committed branch work can still be shipped
 
 ### Delegate PR Creation
 
-- Before continuing, send the exact `session_command` block below through `session_command`
-
-<session_command agent="worker" command="pr/create">
+<delegate agent="worker" command="pr/create">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>
-</session_command>
+</delegate>
 
-- Store the result as `<pr-result>`
+- Store the delegated result as `<pr-result>`
 - If `<pr-result>` is blocked or incomplete, STOP and report the PR blocker
 - Otherwise, continue and store the resulting PR URL as `<pr-url>`
 

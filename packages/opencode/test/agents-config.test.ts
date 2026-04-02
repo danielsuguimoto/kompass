@@ -55,9 +55,9 @@ describe("applyAgentsConfig", () => {
     });
     assert.equal(cfg.agent.worker?.prompt, undefined);
     assert.match(cfg.agent.navigator?.prompt ?? "", /structured, multi-step workflows/i);
-    assert.match(cfg.agent.navigator?.prompt ?? "", /call `?kompass_session_command`?/i);
+    assert.match(cfg.agent.navigator?.prompt ?? "", /call `?kompass_command_expansion`?/i);
     assert.match(cfg.agent.navigator?.prompt ?? "", /manage step order/i);
-    assert.match(cfg.agent.navigator?.prompt ?? "", /<kompass_session_command agent=/i);
+    assert.match(cfg.agent.navigator?.prompt ?? "", /<delegate agent=/i);
     assert.match(cfg.agent.reviewer?.prompt ?? "", /Never switch branches/i);
   });
 
