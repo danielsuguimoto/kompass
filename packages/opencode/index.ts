@@ -3,7 +3,7 @@ import { tool, type ToolDefinition } from "@opencode-ai/plugin/tool";
 
 import {
   createChangesLoadTool,
-  createSessionCommandTool,
+  createCommandExpansionTool,
   createPrLoadTool,
   createPrSyncTool,
   createTicketLoadTool,
@@ -70,37 +70,6 @@ async function logObservedFailure(
     ...(extra ?? {}),
     ...getErrorDetails(error),
   });
-}
-
-function getSessionError(result: unknown) {
-  if (!result || typeof result !== "object") return undefined;
-  if (!("error" in result)) return undefined;
-  return (result as { error?: unknown }).error;
-}
-
-async function executeSessionCommand(
-  client: PluginInput["client"],
-  context: { sessionID: string; directory: string },
-  sessionCommand: { agent?: string; command: string; body: string; prompt: string; expanded: boolean },
-) {
-  const result = await client.session.promptAsync({
-    path: { id: context.sessionID },
-    query: { directory: context.directory },
-    body: {
-      ...(sessionCommand.agent ? { agent: sessionCommand.agent } : {}),
-      // Queue the delegated turn without surfacing the prompt as a normal user message.
-      parts: [{ type: "text", text: sessionCommand.prompt, synthetic: true }],
-    },
-  });
-
-  const error = getSessionError(result);
-  if (error) {
-    throw new Error(`Session command enqueue failed: ${JSON.stringify(error)}`);
-  }
-
-  return {
-    mode: "prompt_async",
-  };
 }
 
 export async function getTaskToolExecution(
@@ -174,47 +143,32 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
       execute: (args, context) => definition.execute(args, context),
     });
   },
-  session_command(_: PluginInput["$"], client: PluginInput["client"], config: MergedKompassConfig, projectRoot: string) {
+  command_expansion(_: PluginInput["$"], _client: PluginInput["client"], config: MergedKompassConfig, projectRoot: string) {
     const configuredToolNames = Object.fromEntries(
       getEnabledToolNames(config.tools).map((toolName) => [
         toolName,
         getConfiguredOpenCodeToolName(toolName, config.tools[toolName].name),
       ]),
     );
-    const definition = createSessionCommandTool(projectRoot, {
+    const definition = createCommandExpansionTool(projectRoot, {
       rewriteBody: (body) => prefixKompassToolReferences(body, configuredToolNames),
     });
 
     return tool({
-      description: "Resolve a command and body and queue it in the current session",
+      description: "Expand a delegated command body into a runnable prompt for immediate task execution.",
       args: {
         command: tool.schema.string().describe("Command name to execute, without the leading slash"),
-        body: tool.schema.string().describe("Literal body content from the session_command block").optional(),
-        agent: tool.schema.string().describe("Optional agent override from the session_command tag").optional(),
+        body: tool.schema.string().describe("Literal body content from the delegate block").optional(),
       },
       execute: async (args, context) => {
         context.metadata({
           title: `Command /${args.command.trim()}`,
           metadata: {
             command: args.command,
-            agent: args.agent,
           },
         });
 
-        const resolved = JSON.parse(await definition.execute(args, context)) as {
-          agent?: string;
-          command: string;
-          body: string;
-          prompt: string;
-          expanded: boolean;
-        };
-        const dispatched = await executeSessionCommand(client, context, resolved);
-
-        return JSON.stringify({
-          ...resolved,
-          queued: true,
-          mode: dispatched.mode,
-        });
+        return definition.execute(args, context);
       },
     });
   },

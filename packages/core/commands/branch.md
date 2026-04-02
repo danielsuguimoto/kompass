@@ -28,7 +28,7 @@ $ARGUMENTS
 ### Check Blockers
 
 - If `<changes>` contains no files, STOP and report that there is nothing to branch from
-- If `<current-branch>` already starts with a conventional work-branch category such as `feature/`, `fix/`, `refactor/`, `docs/`, `test/`, `chore/`, `feat/`, `bugfix/`, `hotfix/`, `perf/`, `build/`, or `ci/`, STOP and report that branching is being skipped because the current branch already looks like a work branch
+- If `<current-branch>` already starts with a conventional work-branch category such as `feature/`, `fix/`, `refactor/`, `docs/`, `test/`, `chore/`, `feat/`, `bugfix/`, `hotfix/`, `perf/`, `build/`, or `ci/`, STOP and report that branching was skipped because the current branch already looks like a work branch
 
 ### Create Branch
 
@@ -51,7 +51,9 @@ No additional steps are required.
 
 If branching is skipped because the current branch already looks like a work branch, display:
 ```
-Already on work branch: <current-branch>
+Branching skipped because the current branch already looks like a work branch.
+
+Current branch: <current-branch>
 
 No additional steps are required.
 ```

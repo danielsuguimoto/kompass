@@ -212,10 +212,10 @@ const scenarios: CommandScenario[] = [
       { id: 'thinking', phase: 'thinking', content: 'Load the ticket, then orchestrate implementation, branch creation, commit-and-push, and PR creation in order.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
         { tool: 'ticket_load', args: '#42', status: 'complete' },
-        { tool: 'session_command', args: 'worker · dev', status: 'complete' },
-        { tool: 'session_command', args: 'worker · branch', status: 'complete' },
-        { tool: 'session_command', args: 'worker · commit-and-push', status: 'complete' },
-        { tool: 'session_command', args: 'worker · pr/create', status: 'complete' }
+        { tool: 'command_expansion', args: 'worker · dev', status: 'complete' },
+        { tool: 'command_expansion', args: 'worker · branch', status: 'complete' },
+        { tool: 'command_expansion', args: 'worker · commit-and-push', status: 'complete' },
+        { tool: 'command_expansion', args: 'worker · pr/create', status: 'complete' }
       ] },
       { id: 'output', phase: 'output', output: [
         'Implemented ticket: refresh command docs',
@@ -381,9 +381,9 @@ const scenarios: CommandScenario[] = [
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Ensure a work branch, delegate commit creation, then delegate PR creation and stop on blockers.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
-        { tool: 'session_command', args: 'worker · branch', status: 'complete' },
-        { tool: 'session_command', args: 'worker · commit', status: 'complete' },
-        { tool: 'session_command', args: 'worker · pr/create', status: 'complete' }
+        { tool: 'command_expansion', args: 'worker · branch', status: 'complete' },
+        { tool: 'command_expansion', args: 'worker · commit', status: 'complete' },
+        { tool: 'command_expansion', args: 'worker · pr/create', status: 'complete' }
       ] },
       { id: 'output', phase: 'output', output: [
         'Ship flow complete',
@@ -403,10 +403,10 @@ const scenarios: CommandScenario[] = [
       { id: 'thinking', phase: 'thinking', content: 'Take the first unchecked item only, plan it, get approval, implement it, commit it, mark it complete, and loop.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
         { tool: 'read', args: '@TODO.md', status: 'complete' },
-        { tool: 'session_command', args: 'planner · ticket/plan', status: 'complete' },
+        { tool: 'command_expansion', args: 'planner · ticket/plan', status: 'complete' },
         { tool: 'question', args: 'Plan Review', status: 'complete' },
-        { tool: 'session_command', args: 'worker · dev', status: 'complete' },
-        { tool: 'session_command', args: 'worker · commit', status: 'complete' }
+        { tool: 'command_expansion', args: 'worker · dev', status: 'complete' },
+        { tool: 'command_expansion', args: 'worker · commit', status: 'complete' }
       ] },
       { id: 'output', phase: 'output', output: [
         'Todo complete: @TODO.md',
@@ -575,16 +575,16 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
                         <div class="tool-calls-block__header">
                           <span class="tool-calls-block__icon">▸</span>
                           <span class="tool-calls-block__label">
-                            {step.toolCalls.some(t => t.tool === 'session_command') ? 'Queued' : 'Explored'}
+                            {step.toolCalls.some(t => t.tool === 'command_expansion') ? 'Delegated' : 'Explored'}
                           </span>
                           <span class="tool-calls-block__count">
-                            {step.toolCalls.length} {step.toolCalls.some(t => t.tool === 'session_command') ? 'session commands' : 'reads, 1 search'}
+                            {step.toolCalls.length} {step.toolCalls.some(t => t.tool === 'command_expansion') ? 'delegations' : 'reads, 1 search'}
                           </span>
                         </div>
                         <div class="tool-calls-block__list">
                           {step.toolCalls.map((tool) => (
-                            <div class:list={{ "tool-call": true, "tool-call--session-command": tool.tool === 'session_command' }} data-tool-status={tool.status}>
-                              {tool.tool === 'session_command' ? (
+                            <div class:list={{ "tool-call": true, "tool-call--session-command": tool.tool === 'command_expansion' }} data-tool-status={tool.status}>
+                              {tool.tool === 'command_expansion' ? (
                                 <>
                                   <span class="tool-call__indicator"></span>
                                   <span class="tool-call__session-command">{tool.args}</span>

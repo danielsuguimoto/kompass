@@ -113,13 +113,13 @@ describe("createOpenCodeTools", () => {
       }) as never, createMockClient() as never, process.cwd());
 
       assert.ok(tools.kompass_changes_load);
-      assert.ok(tools.kompass_session_command);
+      assert.ok(tools.kompass_command_expansion);
       assert.ok(tools.kompass_pr_load);
       assert.ok(tools.kompass_pr_sync);
       assert.ok(tools.kompass_ticket_load);
       assert.ok(tools.kompass_ticket_sync);
       assert.equal(tools.changes_load, undefined);
-      assert.equal(tools.session_command, undefined);
+      assert.equal(tools.command_expansion, undefined);
       assert.equal(tools.pr_load, undefined);
       assert.equal(tools.pr_sync, undefined);
       assert.equal(tools.ticket_load, undefined);
@@ -138,7 +138,7 @@ describe("createOpenCodeTools", () => {
           `{
             "tools": {
               "changes_load": { "enabled": false },
-              "session_command": { "enabled": false },
+               "command_expansion": { "enabled": false },
               "pr_load": { "enabled": false },
               "pr_sync": { "enabled": false },
               "ticket_sync": {
@@ -174,9 +174,9 @@ describe("createOpenCodeTools", () => {
           `{
             // jsonc config should work
             "tools": {
-              "session_command": {
-                "enabled": false
-              },
+               "command_expansion": {
+                 "enabled": false
+               },
               "pr_load": {
                 "enabled": true,
                 "name": "pull_request_context",
@@ -256,14 +256,14 @@ describe("createOpenCodeTools", () => {
     });
   });
 
-  test("session_command queues expanded commands into the current session", async () => {
+  test("command_expansion returns expanded prompts for delegated task execution", async () => {
     await withTempHome(async () => {
       const client = createMockClient();
       const tools = await createOpenCodeTools((() => {
         throw new Error("not implemented");
       }) as never, client as never, process.cwd());
 
-      const output = await (tools.kompass_session_command as any).execute(
+      const output = await (tools.kompass_command_expansion as any).execute(
         { command: "review", body: "auth bug" },
         {
           sessionID: "session-1",
@@ -277,26 +277,11 @@ describe("createOpenCodeTools", () => {
         },
       );
 
-      const result = JSON.parse(output);
-
-      assert.equal(result.agent, "reviewer");
-      assert.equal(result.command, "review");
-      assert.equal(result.body, "auth bug");
-      assert.equal(result.expanded, true);
-      assert.equal(result.queued, true);
-      assert.equal(result.mode, "prompt_async");
-      assert.match(result.prompt, /kompass_changes_load/);
-      assert.doesNotMatch(result.prompt, /`changes_load`/);
       assert.equal(client.sessionCommands.length, 0);
-      assert.equal(client.sessionPromptAsyncs.length, 1);
-      assert.deepEqual(client.sessionPromptAsyncs[0], {
-        path: { id: "session-1" },
-        query: { directory: process.cwd() },
-        body: {
-          agent: "reviewer",
-          parts: [{ type: "text", text: result.prompt, synthetic: true }],
-        },
-      });
+      assert.equal(client.sessionPromptAsyncs.length, 0);
+      assert.match(String(output), /kompass_changes_load/);
+      assert.doesNotMatch(String(output), /`changes_load`/);
+      assert.match(String(output), /auth bug/);
       assert.equal(client.sessionPrompts.length, 0);
     });
   });
@@ -309,8 +294,8 @@ describe("createOpenCodeTools", () => {
       }) as never, client as never, process.cwd());
 
       await assert.rejects(
-        (tools.kompass_session_command as any).execute(
-          { command: "   ", body: "Investigate the redirect bug", agent: "worker" },
+        (tools.kompass_command_expansion as any).execute(
+          { command: "   ", body: "Investigate the redirect bug" },
           {
             sessionID: "session-2",
             messageID: "message-2",

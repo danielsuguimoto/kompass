@@ -423,7 +423,7 @@ describe("applyCommandsConfig", () => {
       assert.ok(cfg.command!["review"]?.template);
     });
 
-    test("embeds literal session_command blocks in ship command", async () => {
+    test("embeds literal delegate blocks in ship command", async () => {
       delete process.env.CI;
       const cfg: { command?: Record<string, { template: string }> } = {};
 
@@ -434,16 +434,17 @@ describe("applyCommandsConfig", () => {
 
       assert.match(shipTemplate, /## Goal/);
       assert.match(shipTemplate, /Ship the current work by dispatching/);
-      assert.match(shipTemplate, /Ensure Feature Branch/);
-      assert.match(shipTemplate, /<kompass_session_command agent="worker" command="branch">/);
-      assert.match(shipTemplate, /\nBranch naming guidance: <branch-context>\n<\/kompass_session_command>/);
-      assert.match(shipTemplate, /Store the dispatch result as `<branch-result>`/);
-      assert.match(shipTemplate, /Store the dispatch result as `<commit-result>`/);
-      assert.match(shipTemplate, /<kompass_session_command agent="worker" command="commit">/);
-      assert.match(shipTemplate, /\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
-      assert.match(shipTemplate, /Store the dispatch result as `<pr-result>`/);
-      assert.match(shipTemplate, /<kompass_session_command agent="worker" command="pr\/create">/);
-      assert.match(shipTemplate, /\nBase branch: <base>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
+      assert.match(shipTemplate, /Delegate Branch Creation/);
+      assert.match(shipTemplate, /<delegate agent="worker" command="branch">/);
+      assert.match(shipTemplate, /\nBranch naming guidance: <branch-context>\n<\/delegate>/);
+      assert.match(shipTemplate, /Store the delegated result as `<branch-result>`/);
+      assert.match(shipTemplate, /<delegate agent="worker" command="commit">/);
+      assert.match(shipTemplate, /\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(shipTemplate, /Store the delegated result as `<commit-result>`/);
+      assert.match(shipTemplate, /<delegate agent="worker" command="pr\/create">/);
+      assert.match(shipTemplate, /\nBase branch: <base>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(shipTemplate, /Store the delegated result as `<pr-result>`/);
+      assert.match(shipTemplate, /Ship flow complete/);
 
       assert.doesNotMatch(shipTemplate, /<%/);
     });
@@ -514,20 +515,24 @@ describe("applyCommandsConfig", () => {
       // PR Author content is now inline in pr/create, not embedded here
       assert.match(ticketDevTemplate, /## Goal/);
       assert.match(ticketDevTemplate, /Implement a ticket/);
-      assert.match(ticketDevTemplate, /<kompass_session_command agent="worker" command="dev">/);
-      assert.match(ticketDevTemplate, /\nTicket reference: <ticket-ref>\nTicket context: <ticket-context>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
-      assert.match(ticketDevTemplate, /<kompass_session_command agent="worker" command="branch">/);
-      assert.match(ticketDevTemplate, /\nBranch naming guidance: <ticket-summary>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
-      assert.match(ticketDevTemplate, /<kompass_session_command agent="worker" command="commit-and-push">/);
-      assert.match(ticketDevTemplate, /\nTicket reference: <ticket-ref>\nTicket summary: <ticket-summary>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
-      assert.match(ticketDevTemplate, /<kompass_session_command agent="worker" command="pr\/create">/);
-      assert.match(ticketDevTemplate, /\nTicket reference: <ticket-ref>\nTicket context: <ticket-context>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
+      assert.match(ticketDevTemplate, /<delegate agent="worker" command="dev">/);
+      assert.match(ticketDevTemplate, /\nTicket reference: <ticket-ref>\nTicket context: <ticket-context>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(ticketDevTemplate, /Store the delegated result as `<implementation-result>`/);
+      assert.match(ticketDevTemplate, /<delegate agent="worker" command="branch">/);
+      assert.match(ticketDevTemplate, /\nBranch naming guidance: <ticket-summary>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(ticketDevTemplate, /Store the delegated result as `<branch-result>`/);
+      assert.match(ticketDevTemplate, /<delegate agent="worker" command="commit-and-push">/);
+      assert.match(ticketDevTemplate, /\nTicket reference: <ticket-ref>\nTicket summary: <ticket-summary>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(ticketDevTemplate, /Store the delegated result as `<commit-result>`/);
+      assert.match(ticketDevTemplate, /<delegate agent="worker" command="pr\/create">/);
+      assert.match(ticketDevTemplate, /\nTicket reference: <ticket-ref>\nTicket context: <ticket-context>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(ticketDevTemplate, /Store the delegated result as `<pr-result>`/);
       assert.doesNotMatch(ticketDevTemplate, /<task agent=/);
 
       assert.doesNotMatch(ticketDevTemplate, /<%/);
     });
 
-    test("embeds literal session_command blocks in todo command", async () => {
+    test("embeds literal delegate blocks in todo command", async () => {
       delete process.env.CI;
       const cfg: { command?: Record<string, { template: string }> } = {};
 
@@ -537,14 +542,19 @@ describe("applyCommandsConfig", () => {
       const todoTemplate = cfg.command!["todo"].template;
 
       assert.match(todoTemplate, /## Goal/);
-      assert.match(todoTemplate, /Work through a todo file one pending item at a time/);
-      assert.match(todoTemplate, /<kompass_session_command agent="planner" command="ticket\/plan">/);
-      assert.match(todoTemplate, /\nTask: <task>\nTask context: <task-context>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
-      assert.match(todoTemplate, /<kompass_session_command agent="worker" command="dev">/);
+      assert.match(todoTemplate, /Work through a todo file one pending item at a time by planning/);
+      assert.match(todoTemplate, /<delegate agent="planner" command="ticket\/plan">/);
+      assert.match(todoTemplate, /\nTask: <task>\nTask context: <task-context>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(todoTemplate, /Store the delegated result as `<plan>`/);
+      assert.match(todoTemplate, /<delegate agent="worker" command="dev">/);
       assert.match(todoTemplate, /Current plan: <plan>\nPlan feedback: <user-answer>/);
-      assert.match(todoTemplate, /\nPlan: <plan>\nTask: <task>\nTask context: <task-context>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
-      assert.match(todoTemplate, /<kompass_session_command agent="worker" command="commit">/);
-      assert.match(todoTemplate, /\nTask: <task>\nAdditional context: <additional-context>\n<\/kompass_session_command>/);
+      assert.match(todoTemplate, /\nPlan: <plan>\nTask: <task>\nTask context: <task-context>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(todoTemplate, /Store the revised delegated result as `<plan>`/);
+      assert.match(todoTemplate, /<delegate agent="worker" command="commit">/);
+      assert.match(todoTemplate, /\nTask: <task>\nAdditional context: <additional-context>\n<\/delegate>/);
+      assert.match(todoTemplate, /Store the delegated result as `<implementation-result>`/);
+      assert.match(todoTemplate, /Store the delegated result as `<commit-result>`/);
+      assert.match(todoTemplate, /Todo: <todo-file>/);
       assert.doesNotMatch(todoTemplate, /<task agent=/);
 
       assert.doesNotMatch(todoTemplate, /<%/);

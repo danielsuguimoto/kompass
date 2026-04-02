@@ -3,49 +3,45 @@ import assert from "node:assert/strict";
 import os from "node:os";
 import path from "node:path";
 
-import { resolveSessionCommand } from "../index.ts";
+import { resolveCommandExpansion } from "../index.ts";
 
 process.env.HOME = path.join(os.tmpdir(), `kompass-test-home-${process.pid}-core-dispatch`);
 
-describe("resolveSessionCommand", () => {
-  test("expands known slash commands and infers their default agent", async () => {
-    const result = await resolveSessionCommand(process.cwd(), { command: "review", body: "auth bug" });
+describe("resolveCommandExpansion", () => {
+  test("expands known slash commands", async () => {
+    const result = await resolveCommandExpansion(process.cwd(), { command: "review", body: "auth bug" });
 
-    assert.equal(result.agent, "reviewer");
     assert.equal(result.command, "review");
     assert.equal(result.body, "auth bug");
     assert.equal(result.expanded, true);
     assert.match(result.prompt, /<arguments>\s*auth bug\s*<\/arguments>/);
   });
 
-  test("preserves explicit agent routing when present", async () => {
-    const result = await resolveSessionCommand(process.cwd(), {
-      agent: "planner",
+  test("expands planner commands without carrying routing state", async () => {
+    const result = await resolveCommandExpansion(process.cwd(), {
       command: "ticket/plan",
       body: "auth bug",
     });
 
-    assert.equal(result.agent, "planner");
     assert.equal(result.command, "ticket/plan");
     assert.equal(result.body, "auth bug");
     assert.equal(result.expanded, true);
   });
 
-  test("allows a dispatch-tag agent override at tool level", async () => {
-    const { createSessionCommandTool } = await import("../index.ts");
-    const tool = createSessionCommandTool(process.cwd());
+  test("returns the expanded prompt at tool level", async () => {
+    const { createCommandExpansionTool } = await import("../index.ts");
+    const tool = createCommandExpansionTool(process.cwd());
     const output = await tool.execute(
-      { command: "review", body: "auth bug", agent: "worker" },
+      { command: "review", body: "auth bug" },
       { worktree: process.cwd(), directory: process.cwd() },
     );
-    const result = JSON.parse(output);
 
-    assert.equal(result.agent, "worker");
-    assert.equal(result.command, "review");
+    assert.match(output, /## Goal/);
+    assert.match(output, /auth bug/);
   });
 
   test("keeps unknown slash commands dispatchable without expansion", async () => {
-    const result = await resolveSessionCommand(process.cwd(), { command: "unknown", body: "auth bug" });
+    const result = await resolveCommandExpansion(process.cwd(), { command: "unknown", body: "auth bug" });
 
     assert.deepEqual(result, {
       command: "unknown",
@@ -57,7 +53,7 @@ describe("resolveSessionCommand", () => {
 
   test("rejects missing commands", async () => {
     await assert.rejects(
-      resolveSessionCommand(process.cwd(), { command: "   ", body: "auth bug" }),
+      resolveCommandExpansion(process.cwd(), { command: "   ", body: "auth bug" }),
       /requires a command/,
     );
   });

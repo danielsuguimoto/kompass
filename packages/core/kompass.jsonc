@@ -41,7 +41,7 @@
 
   "tools": {
     "changes_load": { "enabled": true },
-    "session_command": { "enabled": true },
+    "command_expansion": { "enabled": true },
     "pr_load": { "enabled": true },
     "pr_sync": { "enabled": true },
     "ticket_load": { "enabled": true },

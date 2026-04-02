@@ -16,7 +16,7 @@ Kompass ships workflow-oriented commands authored as explicit templates in `pack
 
 - each command is a documented workflow, not an opaque prompt
 - placeholders like `<arguments>`, `<plan>`, and `<ticket-url>` are normalized before execution
-- navigator workflows orchestrate locally and queue focused leaf work with literal `<session_command>` blocks
+- navigator workflows orchestrate locally and delegate focused leaf work with literal `<delegate>` blocks
 - outputs are deterministic, reviewable, and usually terminal
 
 ## Core workflows
@@ -101,7 +101,7 @@ Implements a ticket through a navigator-led orchestration of `/dev`, `/branch`, 
 
 - usage: `/ticket/dev <ticket-reference>`
 - arguments: ticket reference, URL, file path, or raw request
-- expected tools: `ticket_load`, `session_command(dev)`, `session_command(branch)`, `session_command(commit-and-push)`, `session_command(pr/create)`
+- expected tools: `ticket_load`, `command_expansion(dev)`, `command_expansion(branch)`, `command_expansion(commit-and-push)`, `command_expansion(pr/create)`
 
 ### `/ticket/plan`
 
@@ -169,7 +169,7 @@ Ships current work by delegating branch creation, commit creation, and PR creati
 
 - usage: `/ship [context]`
 - arguments: optional base branch, branch naming guidance, or additional shipping context
-- expected tools: `session_command(branch)`, `session_command(commit)`, `session_command(pr/create)`
+- expected tools: `command_expansion(branch)`, `command_expansion(commit)`, `command_expansion(pr/create)`
 
 ### `/todo`
 
@@ -177,4 +177,4 @@ Works through a todo file one pending item at a time with planning, approval, im
 
 - usage: `/todo [@todo-file]`
 - arguments: optional `@file` reference and execution guidance; defaults to `@TODO.md`
-- expected tools: `read`, `question`, `session_command(ticket/plan)`, `session_command(dev)`, `session_command(commit)`
+- expected tools: `read`, `question`, `command_expansion(ticket/plan)`, `command_expansion(dev)`, `command_expansion(commit)`

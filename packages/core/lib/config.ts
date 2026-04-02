@@ -14,7 +14,7 @@ export interface AgentDefinition {
 
 export const DEFAULT_TOOL_NAMES = [
   "changes_load",
-  "session_command",
+  "command_expansion",
   "pr_load",
   "pr_sync",
   "ticket_sync",
@@ -117,7 +117,7 @@ export interface KompassConfig {
   };
   tools?: {
     changes_load?: ToolConfig;
-    session_command?: ToolConfig;
+    command_expansion?: ToolConfig;
     pr_load?: ToolConfig;
     pr_sync?: ToolConfig;
     ticket_sync?: ToolConfig;
@@ -165,7 +165,7 @@ export interface MergedKompassConfig {
   };
   tools: {
     changes_load: ToolConfig;
-    session_command: ToolConfig;
+    command_expansion: ToolConfig;
     pr_load: ToolConfig;
     pr_sync: ToolConfig;
     ticket_sync: ToolConfig;
@@ -448,7 +448,7 @@ const defaultComponentPaths: Record<string, string> = {
 
 const defaultToolConfig: Record<ToolName, ToolConfig> = {
   changes_load: { enabled: true },
-  session_command: { enabled: true },
+  command_expansion: { enabled: true },
   pr_load: { enabled: true },
   pr_sync: { enabled: true },
   ticket_sync: { enabled: true },
@@ -566,9 +566,9 @@ export function mergeWithDefaults(
     },
     tools: {
       changes_load: { ...defaultToolConfig.changes_load, ...config?.tools?.changes_load },
-      session_command: {
-        ...defaultToolConfig.session_command,
-        ...config?.tools?.session_command,
+      command_expansion: {
+        ...defaultToolConfig.command_expansion,
+        ...config?.tools?.command_expansion,
       },
       pr_load: { ...defaultToolConfig.pr_load, ...config?.tools?.pr_load },
       pr_sync: { ...defaultToolConfig.pr_sync, ...config?.tools?.pr_sync },

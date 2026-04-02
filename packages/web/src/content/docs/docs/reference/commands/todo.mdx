@@ -5,7 +5,7 @@ description: Work through a todo file one item at a time with planning, approval
 
 ## Purpose
 
-Use `/todo` for structured pause-and-resume work from a checklist file with explicit planning, approval, and queued implementation steps.
+Use `/todo` for structured pause-and-resume work from a checklist file with explicit planning, approval, and delegated implementation steps.
 
 ## Usage
 
@@ -17,14 +17,14 @@ Use `/todo` for structured pause-and-resume work from a checklist file with expl
 
 - load `@TODO.md` by default or a provided `@file`
 - take the first unchecked item only
-- queue `ticket/plan`, show the plan, and require explicit approval before implementation
-- queue `dev`, then `commit`, then mark the checklist item complete
+- expand and delegate `ticket/plan`, show the plan, and require explicit approval before implementation
+- expand and delegate `dev`, then `commit`, then mark the checklist item complete
 - repeat until there are no pending tasks left
 
 ## Common tools
 
 - `read`
 - `question`
-- `session_command(planner, ticket/plan)`
-- `session_command(worker, dev)`
-- `session_command(worker, commit)`
+- `command_expansion(planner, ticket/plan)`
+- `command_expansion(worker, dev)`
+- `command_expansion(worker, commit)`
