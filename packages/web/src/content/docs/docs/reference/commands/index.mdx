@@ -7,7 +7,8 @@ Kompass ships workflow-oriented commands authored as explicit templates in `pack
 
 ## Groups
 
-- Core: `/ask`, `/branch`, `/commit`, `/commit-and-push`, `/learn`, `/merge`, `/rmslop`
+- Workflow: `/ask`, `/branch`, `/commit`, `/commit-and-push`, `/merge`, `/rmslop`
+- Guidelines: `/learn`, `/skill/create`, `/skill/optimize`
 - Ticket: `/ticket/ask`, `/ticket/create`, `/ticket/dev`, `/ticket/plan`, `/ticket/plan-and-sync`
 - PR: `/pr/create`, `/pr/fix`, `/pr/review`, `/review`
 - Orchestration: `/dev`, `/ship`, `/todo`
@@ -19,7 +20,7 @@ Kompass ships workflow-oriented commands authored as explicit templates in `pack
 - navigator workflows orchestrate locally and delegate focused leaf work with literal `<delegate>` blocks
 - outputs are deterministic, reviewable, and usually terminal
 
-## Core workflows
+## Workflow Commands
 
 ### `/ask`
 
@@ -53,14 +54,6 @@ Creates a commit and immediately pushes it to the remote repository.
 - arguments: optional commit message guidance
 - expected tools: `changes_load(uncommitted)`, git commit, `git push` with upstream fallback when needed
 
-### `/learn`
-
-Extracts non-obvious learnings from the current session and documents them into the right `AGENTS.md` scope.
-
-- usage: `/learn [focus]`
-- arguments: optional focus scope or extra guidance
-- expected tools: `read`, file edit tools
-
 ### `/merge`
 
 Merges a provided branch into the current branch, defaulting to the repo base branch, and resolves conflicts with a best-effort preference for the incoming branch.
@@ -76,6 +69,32 @@ Removes AI-generated code slop and inconsistencies from branch changes.
 - usage: `/rmslop [base-or-guidance]`
 - arguments: optional base branch or cleanup guidance
 - expected tools: `changes_load`, file-edit tools, validation commands, commit git commands
+
+## Guidelines Commands
+
+### `/learn`
+
+Extracts non-obvious learnings from the current session and documents them into the right `AGENTS.md` scope.
+
+- usage: `/learn [focus]`
+- arguments: optional focus scope or extra guidance
+- expected tools: `read`, file edit tools
+
+### `/skill/create`
+
+Creates a focused Agent Skill from repository context and user direction.
+
+- usage: `/skill/create [skill-direction]`
+- arguments: optional skill request, desired name, supporting sources, or constraints; auto-derives from the conversation when omitted
+- expected tools: `glob`, `read`, file-edit tools, and relevant validation commands
+
+### `/skill/optimize`
+
+Improves an existing Agent Skill using real prompts, failures, evals, or other grounded feedback.
+
+- usage: `/skill/optimize [skill-and-focus]`
+- arguments: optional skill path or slug, optimization focus, supporting evidence, or constraints; auto-derives from the conversation when omitted
+- expected tools: `read`, `glob`, file-edit tools, and relevant validation commands
 
 ## Ticket workflows
 

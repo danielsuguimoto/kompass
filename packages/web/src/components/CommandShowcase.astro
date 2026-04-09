@@ -20,7 +20,7 @@ interface CommandScenario {
   command: string;
   agentName: string;
   task: string;
-  group: 'core' | 'ticket' | 'pr' | 'orchestration';
+  group: 'workflow' | 'guidelines' | 'ticket' | 'pr' | 'orchestration';
   steps: SessionStep[];
 }
 
@@ -31,7 +31,7 @@ const scenarios: CommandScenario[] = [
     command: '/ask is this project cool?',
     agentName: 'Worker',
     task: 'Answer questions about the current project or code',
-    group: 'core',
+    group: 'workflow',
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Need just enough repository context to answer the question directly.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
@@ -51,7 +51,7 @@ const scenarios: CommandScenario[] = [
     command: '/branch docs cleanup',
     agentName: 'Worker',
     task: 'Create a categorized branch from current work',
-    group: 'core',
+    group: 'workflow',
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Summarize uncommitted work, check whether the current branch already looks like a work branch, then generate a short categorized name.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
@@ -70,7 +70,7 @@ const scenarios: CommandScenario[] = [
     command: '/commit tighten command docs',
     agentName: 'Worker',
     task: 'Create a commit from uncommitted work',
-    group: 'core',
+    group: 'workflow',
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Load uncommitted changes, stop if there is nothing to commit, then stage the work and write a conventional message.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
@@ -90,7 +90,7 @@ const scenarios: CommandScenario[] = [
     command: '/commit-and-push',
     agentName: 'Worker',
     task: 'Create a commit and push it',
-    group: 'core',
+    group: 'workflow',
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Create the commit from current uncommitted work, then push and fall back to upstream setup if needed.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
@@ -110,7 +110,7 @@ const scenarios: CommandScenario[] = [
     command: '/learn docs',
     agentName: 'Worker',
     task: 'Document non-obvious session learnings',
-    group: 'core',
+    group: 'guidelines',
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Review the session for durable, non-obvious learnings and place them in the narrowest useful AGENTS.md scope.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
@@ -124,12 +124,56 @@ const scenarios: CommandScenario[] = [
     ]
   },
   {
+    id: 'skill-create',
+    label: '/skill/create',
+    command: '/skill/create add a release-notes skill',
+    agentName: 'Worker',
+    task: 'Create a new skill from project context',
+    group: 'guidelines',
+    steps: [
+      { id: 'thinking', phase: 'thinking', content: 'Inspect existing skill conventions, narrow the scope to one reusable workflow, then author the smallest useful skill file set.' },
+      { id: 'tools', phase: 'tool_calls', toolCalls: [
+        { tool: 'glob', args: '.agents/skills/**/SKILL.md', status: 'complete' },
+        { tool: 'read', args: 'related docs and examples', status: 'complete' },
+        { tool: 'apply_patch', args: 'create .agents/skills/release-notes/SKILL.md', status: 'complete' },
+        { tool: 'read', args: 're-check structure and references', status: 'complete' }
+      ] },
+      { id: 'output', phase: 'output', output: [
+        'Created skill: release-notes',
+        'Path: .agents/skills/release-notes/SKILL.md',
+        'Validation: structure and references checked'
+      ] }
+    ]
+  },
+  {
+    id: 'skill-optimize',
+    label: '/skill/optimize',
+    command: '/skill/optimize .agents/skills/frontend-skill trigger coverage',
+    agentName: 'Worker',
+    task: 'Improve an existing skill from grounded feedback',
+    group: 'guidelines',
+    steps: [
+      { id: 'thinking', phase: 'thinking', content: 'Load the target skill, identify the weakest parts of the trigger or instructions, then make the smallest improvements that improve activation or output quality.' },
+      { id: 'tools', phase: 'tool_calls', toolCalls: [
+        { tool: 'read', args: '.agents/skills/frontend-skill/SKILL.md', status: 'complete' },
+        { tool: 'read', args: 'related examples and support files', status: 'complete' },
+        { tool: 'apply_patch', args: 'tighten description and core guidance', status: 'complete' },
+        { tool: 'read', args: 're-check skill files and references', status: 'complete' }
+      ] },
+      { id: 'output', phase: 'output', output: [
+        'Optimized skill: .agents/skills/frontend-skill',
+        'Updated files: SKILL.md',
+        'Validation: structure and references checked'
+      ] }
+    ]
+  },
+  {
     id: 'merge',
     label: '/merge',
     command: '/merge origin/main',
     agentName: 'Worker',
     task: 'Merge another branch into the current branch',
-    group: 'core',
+    group: 'workflow',
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Confirm the working tree is clean, resolve the merge source, run the merge, and only continue if conflicts can be resolved confidently.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
@@ -148,7 +192,7 @@ const scenarios: CommandScenario[] = [
     command: '/rmslop main',
     agentName: 'Worker',
     task: 'Clean AI-style slop from branch changes',
-    group: 'core',
+    group: 'workflow',
     steps: [
       { id: 'thinking', phase: 'thinking', content: 'Load the branch diff, identify noisy or inconsistent AI-shaped edits, clean them up, validate, and commit the cleanup.' },
       { id: 'tools', phase: 'tool_calls', toolCalls: [
@@ -417,7 +461,8 @@ const scenarios: CommandScenario[] = [
 ];
 
 // Group scenarios
-const coreScenarios = scenarios.filter(s => s.group === 'core');
+const workflowScenarios = scenarios.filter(s => s.group === 'workflow');
+const guidelineScenarios = scenarios.filter(s => s.group === 'guidelines');
 const ticketScenarios = scenarios.filter(s => s.group === 'ticket');
 const prScenarios = scenarios.filter(s => s.group === 'pr');
 const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration');
@@ -434,18 +479,37 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
   </div>
 
   <div class="command-showcase__main">
-    <!-- Four fieldsets side-by-side, centered, exploding container -->
+    <!-- Showcase command groups -->
     <div class="command-groups-wrapper">
       <div class="command-groups">
         <fieldset class="command-group">
-          <legend class="command-group__legend">Core</legend>
+          <legend class="command-group__legend">Workflow</legend>
           <div class="command-group__tabs">
-            {coreScenarios.map((scenario, index) => (
+            {workflowScenarios.map((scenario, index) => (
               <button 
                 type="button"
                 class:list={{ "command-tab": true, "is-active": index === 0 }}
                 role="tab"
                 aria-selected={index === 0 ? "true" : "false"}
+                aria-controls={`panel-${scenario.id}`}
+                id={`tab-${scenario.id}`}
+                data-command-tab={scenario.id}
+              >
+                {scenario.label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="command-group command-group--guidelines">
+          <legend class="command-group__legend">Guidelines</legend>
+          <div class="command-group__tabs">
+            {guidelineScenarios.map((scenario) => (
+              <button 
+                type="button"
+                class:list={{ "command-tab command-tab--guidelines": true }}
+                role="tab"
+                aria-selected="false"
                 aria-controls={`panel-${scenario.id}`}
                 id={`tab-${scenario.id}`}
                 data-command-tab={scenario.id}
@@ -940,6 +1004,11 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
     background: rgba(139, 92, 246, 0.1);
   }
 
+  .command-group--guidelines {
+    border-color: rgba(248, 184, 78, 0.25);
+    background: rgba(248, 184, 78, 0.1);
+  }
+
   .command-group--pr {
     border-color: rgba(34, 197, 94, 0.25);
     background: rgba(34, 197, 94, 0.1);
@@ -964,6 +1033,11 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
   .command-group--ticket .command-group__legend {
     color: rgba(139, 92, 246, 0.9);
     background: rgba(139, 92, 246, 0.2);
+  }
+
+  .command-group--guidelines .command-group__legend {
+    color: rgba(248, 184, 78, 0.95);
+    background: rgba(248, 184, 78, 0.2);
   }
 
   .command-group--pr .command-group__legend {
@@ -1016,10 +1090,22 @@ const orchestrationScenarios = scenarios.filter(s => s.group === 'orchestration'
     background: rgba(139, 92, 246, 0.1);
   }
 
+  .command-tab--guidelines {
+    border-color: rgba(248, 184, 78, 0.25);
+    background: rgba(248, 184, 78, 0.1);
+  }
+
   .command-tab--ticket:hover,
   .command-tab--ticket.is-active {
     border-color: rgba(139, 92, 246, 0.45);
     background: rgba(139, 92, 246, 0.18);
+    color: var(--text);
+  }
+
+  .command-tab--guidelines:hover,
+  .command-tab--guidelines.is-active {
+    border-color: rgba(248, 184, 78, 0.45);
+    background: rgba(248, 184, 78, 0.18);
     color: var(--text);
   }
 

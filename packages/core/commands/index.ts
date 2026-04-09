@@ -68,6 +68,16 @@ export const commandDefinitions: Record<string, CommandDefinition> = {
     agent: "reviewer",
     templatePath: "commands/review.md",
   },
+  "skill/create": {
+    description: "Create a focused Agent Skill from repo context",
+    agent: "worker",
+    templatePath: "commands/skill/create.md",
+  },
+  "skill/optimize": {
+    description: "Improve an existing Agent Skill from real feedback",
+    agent: "worker",
+    templatePath: "commands/skill/optimize.md",
+  },
   ship: {
     description: "Ship branch work through commit and PR creation",
     agent: "navigator",
