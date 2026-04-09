@@ -54,14 +54,6 @@ Creates a commit and immediately pushes it to the remote repository.
 - arguments: optional commit message guidance
 - expected tools: `changes_load(uncommitted)`, git commit, `git push` with upstream fallback when needed
 
-### `/learn`
-
-Extracts non-obvious learnings from the current session and documents them into the right `AGENTS.md` scope.
-
-- usage: `/learn [focus]`
-- arguments: optional focus scope or extra guidance
-- expected tools: `read`, file edit tools
-
 ### `/merge`
 
 Merges a provided branch into the current branch, defaulting to the repo base branch, and resolves conflicts with a best-effort preference for the incoming branch.
@@ -77,6 +69,16 @@ Removes AI-generated code slop and inconsistencies from branch changes.
 - usage: `/rmslop [base-or-guidance]`
 - arguments: optional base branch or cleanup guidance
 - expected tools: `changes_load`, file-edit tools, validation commands, commit git commands
+
+## Guidelines Commands
+
+### `/learn`
+
+Extracts non-obvious learnings from the current session and documents them into the right `AGENTS.md` scope.
+
+- usage: `/learn [focus]`
+- arguments: optional focus scope or extra guidance
+- expected tools: `read`, file edit tools
 
 ### `/skill/create`
 
