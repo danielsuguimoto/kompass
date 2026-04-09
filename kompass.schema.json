@@ -65,6 +65,12 @@
         "review": {
           "$ref": "#/$defs/commandConfig"
         },
+        "skill/create": {
+          "$ref": "#/$defs/commandConfig"
+        },
+        "skill/optimize": {
+          "$ref": "#/$defs/commandConfig"
+        },
         "ship": {
           "$ref": "#/$defs/commandConfig"
         },
@@ -105,6 +111,8 @@
               "pr/fix",
               "pr/review",
               "review",
+              "skill/create",
+              "skill/optimize",
               "ship",
               "rmslop",
               "todo",
@@ -133,6 +141,8 @@
               "pr/fix",
               "pr/review",
               "review",
+              "skill/create",
+              "skill/optimize",
               "ship",
               "rmslop",
               "todo",
@@ -223,6 +233,9 @@
         "load-ticket": {
           "$ref": "#/$defs/componentConfig"
         },
+        "skill-authoring": {
+          "$ref": "#/$defs/componentConfig"
+        },
         "summarize-changes": {
           "$ref": "#/$defs/componentConfig"
         },
@@ -230,7 +243,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "summarize-changes"]
+            "enum": ["change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
           },
           "uniqueItems": true,
           "deprecated": true
@@ -238,7 +251,7 @@
         "paths": {
           "type": "object",
           "propertyNames": {
-            "enum": ["change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "summarize-changes"]
+            "enum": ["change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
           },
           "additionalProperties": {
             "type": "string"

@@ -38,6 +38,8 @@ describe("applyCommandsConfig", () => {
         "pr/create",
         "pr/review",
         "pr/fix",
+        "skill/create",
+        "skill/optimize",
         "ship",
         "ticket/ask",
         "ticket/create",
@@ -64,6 +66,8 @@ describe("applyCommandsConfig", () => {
       assert.equal(cfg.command!["merge"]?.agent, "worker");
       assert.equal(cfg.command!["pr/create"]?.agent, "worker");
       assert.equal(cfg.command!["ticket/create"]?.agent, "worker");
+      assert.equal(cfg.command!["skill/create"]?.agent, "worker");
+      assert.equal(cfg.command!["skill/optimize"]?.agent, "worker");
       assert.equal(cfg.command!["ticket/plan"]?.agent, "planner");
       assert.equal(cfg.command!["ticket/plan-and-sync"]?.agent, "planner");
       assert.equal(cfg.command!["ask"]?.agent, "worker");
@@ -420,6 +424,8 @@ describe("applyCommandsConfig", () => {
       assert.ok(cfg.command!["ticket/plan"]?.template);
       assert.ok(cfg.command!["ticket/plan-and-sync"]?.template);
       assert.ok(cfg.command!["pr/fix"]?.template);
+      assert.ok(cfg.command!["skill/create"]?.template);
+      assert.ok(cfg.command!["skill/optimize"]?.template);
       assert.ok(cfg.command!["ship"]?.template);
       assert.ok(cfg.command!["ticket/dev"]?.template);
       assert.ok(cfg.command!["review"]?.template);
@@ -501,6 +507,30 @@ describe("applyCommandsConfig", () => {
       assert.match(ticketCreateTemplate, /Load & Analyze Changes/);
 
       assert.doesNotMatch(ticketCreateTemplate, /<%/);
+    });
+
+    test("embeds shared skill-authoring guidance in skill commands", async () => {
+      delete process.env.CI;
+      const cfg: { command?: Record<string, { template: string }> } = {};
+
+      await applyCommandsConfig(cfg as never, process.cwd());
+
+      assert.ok(cfg.command);
+      const skillCreateTemplate = cfg.command!["skill/create"].template;
+      const skillOptimizeTemplate = cfg.command!["skill/optimize"].template;
+
+      assert.match(skillCreateTemplate, /## Goal/);
+      assert.match(skillCreateTemplate, /Shared Skill Workflow/);
+      assert.match(skillCreateTemplate, /Load Related Context/);
+      assert.match(skillCreateTemplate, /Ground decisions in project-specific patterns/);
+      assert.doesNotMatch(skillCreateTemplate, /<%/);
+
+      assert.match(skillOptimizeTemplate, /## Goal/);
+      assert.match(skillOptimizeTemplate, /Improve an existing Agent Skill/);
+      assert.match(skillOptimizeTemplate, /Shared Skill Workflow/);
+      assert.match(skillOptimizeTemplate, /Reapply Skill Workflow/);
+      assert.match(skillOptimizeTemplate, /Identify the smallest set of changes/);
+      assert.doesNotMatch(skillOptimizeTemplate, /<%/);
     });
 
     test("embeds all expected components in ticket/dev command", async () => {

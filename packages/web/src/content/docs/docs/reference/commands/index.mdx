@@ -7,7 +7,7 @@ Kompass ships workflow-oriented commands authored as explicit templates in `pack
 
 ## Groups
 
-- Core: `/ask`, `/branch`, `/commit`, `/commit-and-push`, `/learn`, `/merge`, `/rmslop`
+- Core: `/ask`, `/branch`, `/commit`, `/commit-and-push`, `/learn`, `/merge`, `/rmslop`, `/skill/create`, `/skill/optimize`
 - Ticket: `/ticket/ask`, `/ticket/create`, `/ticket/dev`, `/ticket/plan`, `/ticket/plan-and-sync`
 - PR: `/pr/create`, `/pr/fix`, `/pr/review`, `/review`
 - Orchestration: `/dev`, `/ship`, `/todo`
@@ -76,6 +76,22 @@ Removes AI-generated code slop and inconsistencies from branch changes.
 - usage: `/rmslop [base-or-guidance]`
 - arguments: optional base branch or cleanup guidance
 - expected tools: `changes_load`, file-edit tools, validation commands, commit git commands
+
+### `/skill/create`
+
+Creates a focused Agent Skill from repository context and user direction.
+
+- usage: `/skill/create [skill-direction]`
+- arguments: optional skill request, desired name, supporting sources, or constraints; auto-derives from the conversation when omitted
+- expected tools: `glob`, `read`, file-edit tools, validation commands such as `skills-ref validate` when available
+
+### `/skill/optimize`
+
+Improves an existing Agent Skill using real prompts, failures, evals, or other grounded feedback.
+
+- usage: `/skill/optimize [skill-and-focus]`
+- arguments: optional skill path or slug, optimization focus, supporting evidence, or constraints; auto-derives from the conversation when omitted
+- expected tools: `read`, `glob`, file-edit tools, validation commands such as `skills-ref validate` when available
 
 ## Ticket workflows
 

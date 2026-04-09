@@ -33,6 +33,8 @@ export const DEFAULT_COMMAND_NAMES = [
   "pr/fix",
   "pr/review",
   "review",
+  "skill/create",
+  "skill/optimize",
   "ship",
   "rmslop",
   "todo",
@@ -52,6 +54,7 @@ export const DEFAULT_COMPONENT_NAMES = [
   "dev-flow",
   "load-pr",
   "load-ticket",
+  "skill-authoring",
   "summarize-changes",
 ] as const;
 
@@ -97,6 +100,8 @@ export interface KompassConfig {
     "pr/fix"?: CommandConfig;
     "pr/review"?: CommandConfig;
     review?: CommandConfig;
+    "skill/create"?: CommandConfig;
+    "skill/optimize"?: CommandConfig;
     ship?: CommandConfig;
     rmslop?: CommandConfig;
     todo?: CommandConfig;
@@ -130,6 +135,7 @@ export interface KompassConfig {
     "dev-flow"?: ComponentConfig;
     "load-pr"?: ComponentConfig;
     "load-ticket"?: ComponentConfig;
+    "skill-authoring"?: ComponentConfig;
     "summarize-changes"?: ComponentConfig;
     enabled?: string[];
     paths?: Record<string, string>;
@@ -443,6 +449,7 @@ const defaultComponentPaths: Record<string, string> = {
   "dev-flow": "components/dev-flow.md",
   "load-pr": "components/load-pr.md",
   "load-ticket": "components/load-ticket.md",
+  "skill-authoring": "components/skill-authoring.md",
   "summarize-changes": "components/summarize-changes.md",
 };
 

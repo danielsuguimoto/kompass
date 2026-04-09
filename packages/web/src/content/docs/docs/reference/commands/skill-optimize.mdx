@@ -1,0 +1,30 @@
+---
+title: /skill/optimize
+description: Improve an existing Agent Skill using real prompts, failures, evals, or other grounded feedback.
+---
+
+## Purpose
+
+Use `/skill/optimize` to load an existing skill, understand what is weak about it, and then reapply the same design and writing rules used by `/skill/create`.
+
+## Usage
+
+```text
+/skill/optimize [skill-and-focus]
+```
+
+## Typical flow
+
+- resolve the target skill from a path, slug, or `SKILL.md` reference
+- load the current skill plus only the support files and evidence relevant to the optimization focus
+- decide whether a meaningful improvement is actually needed
+- reapply the shared skill workflow to redesign, rewrite, and validate the skill without rewriting working parts blindly
+- add or refine minimal eval coverage only when the optimization depends on repeatable checks
+- validate the resulting skill structure and run `skills-ref validate` when it is available
+
+## Common tools
+
+- `glob`
+- `read`
+- file edit tools
+- `bash(skills-ref validate)` when available

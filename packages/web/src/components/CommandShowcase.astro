@@ -124,6 +124,50 @@ const scenarios: CommandScenario[] = [
     ]
   },
   {
+    id: 'skill-create',
+    label: '/skill/create',
+    command: '/skill/create add a release-notes skill',
+    agentName: 'Worker',
+    task: 'Create a new skill from project context',
+    group: 'core',
+    steps: [
+      { id: 'thinking', phase: 'thinking', content: 'Inspect existing skill conventions, narrow the scope to one reusable workflow, then author the smallest useful skill file set.' },
+      { id: 'tools', phase: 'tool_calls', toolCalls: [
+        { tool: 'glob', args: '.agents/skills/**/SKILL.md', status: 'complete' },
+        { tool: 'read', args: 'related docs and examples', status: 'complete' },
+        { tool: 'apply_patch', args: 'create .agents/skills/release-notes/SKILL.md', status: 'complete' },
+        { tool: 'bash', args: 'skills-ref validate .agents/skills/release-notes', status: 'complete' }
+      ] },
+      { id: 'output', phase: 'output', output: [
+        'Created skill: release-notes',
+        'Path: .agents/skills/release-notes/SKILL.md',
+        'Validation: skills-ref validate passed'
+      ] }
+    ]
+  },
+  {
+    id: 'skill-optimize',
+    label: '/skill/optimize',
+    command: '/skill/optimize .agents/skills/frontend-skill trigger coverage',
+    agentName: 'Worker',
+    task: 'Improve an existing skill from grounded feedback',
+    group: 'core',
+    steps: [
+      { id: 'thinking', phase: 'thinking', content: 'Load the target skill, inspect the weakest parts of the trigger and instructions, then make the smallest improvements that improve activation or output quality.' },
+      { id: 'tools', phase: 'tool_calls', toolCalls: [
+        { tool: 'read', args: '.agents/skills/frontend-skill/SKILL.md', status: 'complete' },
+        { tool: 'read', args: 'related evals and examples', status: 'complete' },
+        { tool: 'apply_patch', args: 'tighten description and gotchas', status: 'complete' },
+        { tool: 'bash', args: 'skills-ref validate .agents/skills/frontend-skill', status: 'complete' }
+      ] },
+      { id: 'output', phase: 'output', output: [
+        'Optimized skill: .agents/skills/frontend-skill',
+        'Updated files: SKILL.md and evals/evals.json',
+        'Validation: skills-ref validate passed'
+      ] }
+    ]
+  },
+  {
     id: 'merge',
     label: '/merge',
     command: '/merge origin/main',

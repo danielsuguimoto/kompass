@@ -22,6 +22,8 @@
     "pr/fix": { "enabled": true },
     "pr/review": { "enabled": true },
     "review": { "enabled": true },
+    "skill/create": { "enabled": true },
+    "skill/optimize": { "enabled": true },
     "ship": { "enabled": true },
     "rmslop": { "enabled": true },
     "todo": { "enabled": true },
@@ -55,6 +57,7 @@
     "dev-flow": { "enabled": true },
     "load-pr": { "enabled": true },
     "load-ticket": { "enabled": true },
+    "skill-authoring": { "enabled": true },
     "summarize-changes": { "enabled": true },
   },
 

@@ -40,6 +40,12 @@
     "review": {
       "enabled": true
     },
+    "skill/create": {
+      "enabled": true
+    },
+    "skill/optimize": {
+      "enabled": true
+    },
     "ship": {
       "enabled": true
     },

@@ -1,0 +1,30 @@
+---
+title: /skill/create
+description: Create a focused Agent Skill from repository context and user direction.
+---
+
+## Purpose
+
+Use `/skill/create` to author a new reusable Agent Skill that is grounded in the current project instead of generic best-practice filler.
+
+## Usage
+
+```text
+/skill/create [skill-direction]
+```
+
+## Typical flow
+
+- inspect existing skills, skill roots, and nearby project artifacts
+- stop if the request would duplicate an existing skill without a clear scope boundary
+- derive a valid hyphenated skill name and default root such as `.agents/skills/`
+- create a concise `SKILL.md` with an intent-oriented trigger description and focused execution guidance
+- add `references/`, `scripts/`, or `assets/` only when they materially improve the skill
+- validate the structure and run `skills-ref validate` when it is available
+
+## Common tools
+
+- `glob`
+- `read`
+- file edit tools
+- `bash(skills-ref validate)` when available
