@@ -36,7 +36,5 @@
 - Confirm the directory name matches the skill name in frontmatter
 - Confirm the frontmatter is valid and the description remains within the Agent Skills limits
 - Confirm file references are relative to the skill root and point to real files
-- If `skills-ref` is available, run `skills-ref validate <skill-dir>`
-- Otherwise, perform manual validation of the structure, frontmatter, trigger description, and referenced files
 - If scripts or eval helpers were added or updated, run the most relevant available validation for those files
 - Store the resulting validation summary as `<validation-results>`

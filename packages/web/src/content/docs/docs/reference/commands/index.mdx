@@ -83,7 +83,7 @@ Creates a focused Agent Skill from repository context and user direction.
 
 - usage: `/skill/create [skill-direction]`
 - arguments: optional skill request, desired name, supporting sources, or constraints; auto-derives from the conversation when omitted
-- expected tools: `glob`, `read`, file-edit tools, validation commands such as `skills-ref validate` when available
+- expected tools: `glob`, `read`, file-edit tools, and relevant validation commands
 
 ### `/skill/optimize`
 
@@ -91,7 +91,7 @@ Improves an existing Agent Skill using real prompts, failures, evals, or other g
 
 - usage: `/skill/optimize [skill-and-focus]`
 - arguments: optional skill path or slug, optimization focus, supporting evidence, or constraints; auto-derives from the conversation when omitted
-- expected tools: `read`, `glob`, file-edit tools, validation commands such as `skills-ref validate` when available
+- expected tools: `read`, `glob`, file-edit tools, and relevant validation commands
 
 ## Ticket workflows
 
