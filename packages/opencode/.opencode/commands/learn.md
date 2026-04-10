@@ -13,6 +13,8 @@ Extract non-obvious learnings from this session and document them appropriately.
 - Skip obvious facts, standard behavior, and already-documented items
 - Avoid verbose explanations and session-specific details
 - Use `<focus-scope>` and `<additional-context>` to decide where to look more closely
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 
 ## Workflow
 

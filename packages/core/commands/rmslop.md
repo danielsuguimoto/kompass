@@ -5,6 +5,7 @@ Remove AI-generated code slop and inconsistencies from the branch changes.
 ## Additional Context
 
 Use `<additional-context>` to decide which kinds of slop to prioritize and which areas should remain untouched.
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

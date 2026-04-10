@@ -5,6 +5,7 @@ Create a ticket that summarizes the work returned by the current change comparis
 ## Additional Context
 
 Consider `<additional-context>` when analyzing the work and writing the ticket title and body.
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

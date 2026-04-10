@@ -10,6 +10,8 @@ Merge a provided branch into the current branch, defaulting to the repo base bra
 ## Additional Context
 
 Consider `<additional-context>` when choosing between competing conflict resolutions.
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 - Default to preserving both sides when the intent is clear and the merged result remains coherent.
 - When a confident manual merge is not obvious, prefer the incoming `<merge-source>` version to keep the command moving.
 - Do not create a merge commit if any conflicts remain unresolved.

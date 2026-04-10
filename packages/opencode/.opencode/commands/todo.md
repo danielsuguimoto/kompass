@@ -13,6 +13,8 @@ Work through a todo file one pending item at a time by planning, getting approva
 - Do not merge separate todo items unless the file explicitly frames them as one task
 - If implementation reveals scope that materially changes the approved plan, pause and re-plan before marking the task complete
 - Use `<additional-context>` to prioritize tradeoffs, constraints, or validation expectations during planning and implementation
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 - Delegate planner and worker steps through literal `<delegate>` blocks and use the delegated results as the source of truth for planning, implementation, and commit steps.
 
 ## Workflow

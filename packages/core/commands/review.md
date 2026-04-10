@@ -5,6 +5,7 @@ Review code changes and provide actionable feedback with a grade and risk assess
 ## Additional Context
 
 Use `<additional-context>` to prioritize specific risks, feature areas, or related concerns while reviewing `<changes>`.
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

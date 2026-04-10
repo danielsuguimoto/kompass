@@ -5,6 +5,7 @@ Merge a provided branch into the current branch, defaulting to the repo base bra
 ## Additional Context
 
 Consider `<additional-context>` when choosing between competing conflict resolutions.
+<%~ include("@additional-context-priority") %>
 - Default to preserving both sides when the intent is clear and the merged result remains coherent.
 - When a confident manual merge is not obvious, prefer the incoming `<merge-source>` version to keep the command moving.
 - Do not create a merge commit if any conflicts remain unresolved.

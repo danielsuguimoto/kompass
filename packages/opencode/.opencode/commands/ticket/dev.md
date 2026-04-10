@@ -10,6 +10,8 @@ Implement a ticket by orchestrating development, branching, commit-and-push, and
 ## Additional Context
 
 Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the delegated `/dev`, `/branch`, `/commit-and-push`, and `/pr/create` steps.
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 
 ## Workflow
 

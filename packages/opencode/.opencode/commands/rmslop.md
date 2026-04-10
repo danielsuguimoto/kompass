@@ -10,6 +10,8 @@ Remove AI-generated code slop and inconsistencies from the branch changes.
 ## Additional Context
 
 Use `<additional-context>` to decide which kinds of slop to prioritize and which areas should remain untouched.
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 
 ## Workflow
 

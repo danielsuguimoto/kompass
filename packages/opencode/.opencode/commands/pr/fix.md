@@ -10,6 +10,8 @@ Address feedback on a pull request by making fixes and responding to review thre
 ## Additional Context
 
 Use `<additional-context>` when prioritizing which review feedback to address first and when deciding how much scope to take on in this pass.
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 - Default `/pr/fix` behavior is review-first: show the proposed fix, gather feedback, and loop until the user approves before committing, pushing, or replying on the PR.
 - Treat `/pr/fix auto` as the explicit opt-in to skip the approval loop and proceed directly from passing validation to commit, push, and PR replies.
 

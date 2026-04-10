@@ -10,6 +10,8 @@ Create a commit and immediately push it to the remote repository.
 ## Additional Context
 
 Consider `<additional-context>` when analyzing changes and writing the commit message.
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 
 ## Workflow
 

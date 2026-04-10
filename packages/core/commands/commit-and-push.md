@@ -5,6 +5,7 @@ Create a commit and immediately push it to the remote repository.
 ## Additional Context
 
 Consider `<additional-context>` when analyzing changes and writing the commit message.
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

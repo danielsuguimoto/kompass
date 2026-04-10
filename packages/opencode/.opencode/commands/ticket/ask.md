@@ -10,6 +10,8 @@ Load a ticket and its discussion, answer the user's question, and post that answ
 ## Additional Context
 
 - Use `<additional-context>` to shape tone, depth, and focus for `<ticket-answer>`
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 - Keep the posted answer grounded in the actual ticket discussion; do not invent missing facts
 - Ask only when the ticket source or question cannot be determined reliably
 

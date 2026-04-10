@@ -5,6 +5,7 @@ Implement a ticket by orchestrating development, branching, commit-and-push, and
 ## Additional Context
 
 Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the delegated `/dev`, `/branch`, `/commit-and-push`, and `/pr/create` steps.
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

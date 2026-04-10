@@ -6,6 +6,7 @@ Improve an existing Agent Skill so it triggers more reliably, stays lean, and pr
 
 - Favor targeted iteration over full rewrites; keep what already works and change only the parts blocking activation or execution quality
 - Prefer optimization grounded in real prompts, evals, reviewer feedback, transcripts, or repeated failures over speculative cleanup
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

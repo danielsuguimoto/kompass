@@ -10,6 +10,8 @@ Create a ticket that summarizes the work returned by the current change comparis
 ## Additional Context
 
 Consider `<additional-context>` when analyzing the work and writing the ticket title and body.
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 
 ## Workflow
 

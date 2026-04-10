@@ -11,6 +11,8 @@ Improve an existing Agent Skill so it triggers more reliably, stays lean, and pr
 
 - Favor targeted iteration over full rewrites; keep what already works and change only the parts blocking activation or execution quality
 - Prefer optimization grounded in real prompts, evals, reviewer feedback, transcripts, or repeated failures over speculative cleanup
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 
 ## Workflow
 

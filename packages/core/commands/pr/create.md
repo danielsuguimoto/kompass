@@ -5,6 +5,7 @@ Create a pull request for the current branch, handling the entire workflow from 
 ## Additional Context
 
 Consider `<additional-context>` when analyzing changes and writing the PR description.
+<%~ include("@additional-context-priority") %>
 - Always include the `Ticket`, `Description`, and `Checklist` sections in that order.
 - Use the literal `SKIPPED` when ticket mention was skipped.
 - Keep the description focused on intent, not implementation details.

@@ -8,6 +8,7 @@ Create a scoped implementation plan from a request or ticket and present it dire
 - Use the current request to determine `<planning-objective>`.
 - Earlier comments remain in force when they add operative constraints, business rules, technical decisions, migration rules, exact labels or renames, ordering rules, or scoping rules.
 - Use `<additional-context>` to emphasize the most important constraints, dependencies, or focus areas.
+<%~ include("@additional-context-priority") %>
 - For technical tickets, repo inspection is expected unless the request is clearly non-technical or repository context is unavailable.
 - If technical details provided in the conversation are good, keep them.
 - If those details are incomplete, validate and improve them.

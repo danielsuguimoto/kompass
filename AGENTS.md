@@ -70,6 +70,7 @@ packages/opencode/.opencode/ # Generated OpenCode output for review
 - Do not restate `command_expansion` or `task` mechanics inside command docs; navigator owns that execution flow
 - When a command can pause for approval or loop over repeated work, describe the resume condition and the exact cases that must STOP without mutating state
 - Use `## Additional Context` for instructions about how optional guidance, related tickets, focus areas, or other stored context should influence analysis and response formatting
+- When a command uses `<additional-context>`, say explicitly that it overrides conflicting built-in command guidance unless higher-priority safety or instruction layers forbid it
 - Use `### Output` as the final workflow step to define the exact user-facing response shape, including placeholders for generated values
 - Make success, blocked, no-op, waiting, and resume-required outcomes explicit in `### Output` or the surrounding workflow so navigator-led flows report deterministic end states
 - For terminal command outcomes, prefer an explicit final line inside the output block: `No additional steps are required.`

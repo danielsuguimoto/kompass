@@ -5,6 +5,7 @@ Load a ticket and its discussion, answer the user's question, and post that answ
 ## Additional Context
 
 - Use `<additional-context>` to shape tone, depth, and focus for `<ticket-answer>`
+<%~ include("@additional-context-priority") %>
 - Keep the posted answer grounded in the actual ticket discussion; do not invent missing facts
 - Ask only when the ticket source or question cannot be determined reliably
 

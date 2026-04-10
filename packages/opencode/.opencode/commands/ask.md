@@ -10,6 +10,8 @@ Answer a question about the current project or codebase using the repository and
 ## Additional Context
 
 - Use `<additional-context>` to prioritize the most relevant files, subsystems, or concerns
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 - Ask only when the question cannot be determined from `<arguments>` and the conversation
 
 ## Workflow

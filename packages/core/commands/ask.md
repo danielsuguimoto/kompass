@@ -5,6 +5,7 @@ Answer a question about the current project or codebase using the repository and
 ## Additional Context
 
 - Use `<additional-context>` to prioritize the most relevant files, subsystems, or concerns
+<%~ include("@additional-context-priority") %>
 - Ask only when the question cannot be determined from `<arguments>` and the conversation
 
 ## Workflow

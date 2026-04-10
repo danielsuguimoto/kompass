@@ -5,6 +5,7 @@ Implement a feature or fix based on a ticket or request, then prepare for PR cre
 ## Additional Context
 
 Use `<additional-context>` to refine priorities, scope, and tradeoffs while implementing `<request-context>`.
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

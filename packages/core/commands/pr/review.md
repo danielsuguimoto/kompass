@@ -5,6 +5,7 @@ Review a GitHub pull request and publish findings as a formal review with inline
 ## Additional Context
 
 Use `<ticket-context>` and `<additional-context>` to judge whether the PR meets its stated intent without over-indexing on stylistic preferences.
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

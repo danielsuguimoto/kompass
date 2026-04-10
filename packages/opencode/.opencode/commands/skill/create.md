@@ -11,6 +11,8 @@ Create a new Agent Skill from project context and user direction, producing a fo
 
 - Favor creation over revision: create the smallest correct first version of the skill from the gathered context
 - Only add support files during creation when they clearly improve execution on day one
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 
 ## Workflow
 

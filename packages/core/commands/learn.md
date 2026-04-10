@@ -8,6 +8,7 @@ Extract non-obvious learnings from this session and document them appropriately.
 - Skip obvious facts, standard behavior, and already-documented items
 - Avoid verbose explanations and session-specific details
 - Use `<focus-scope>` and `<additional-context>` to decide where to look more closely
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 

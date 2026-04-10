@@ -13,6 +13,8 @@ Create a scoped implementation plan from a request or ticket, then capture that 
 - Use the current request to determine `<planning-objective>`.
 - Earlier comments remain in force when they add operative constraints, business rules, technical decisions, migration rules, exact labels or renames, ordering rules, or scoping rules.
 - Use `<additional-context>` to emphasize the most important constraints, dependencies, or focus areas.
+- When `<additional-context>` conflicts with the command's built-in guidance, treat `<additional-context>` as the higher-priority user instruction unless that would violate system, developer, repository, or tool safety rules.
+- Use the built-in command guidance only to fill gaps that `<additional-context>` does not override.
 - For technical tickets, repo inspection is expected unless the request is clearly non-technical or repository context is unavailable.
 - If technical details provided in the conversation are good, keep them.
 - If those details are incomplete, validate and improve them.

@@ -6,6 +6,7 @@ Create a new Agent Skill from project context and user direction, producing a fo
 
 - Favor creation over revision: create the smallest correct first version of the skill from the gathered context
 - Only add support files during creation when they clearly improve execution on day one
+<%~ include("@additional-context-priority") %>
 
 ## Workflow
 
