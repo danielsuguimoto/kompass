@@ -50,17 +50,21 @@ Call `changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <pr-context
 Following the reviewer agent guidance:
 1. Check `<pr-context.reviews>`, `<pr-context.issueComments>`, and `<pr-context.threads>`
 2. Use `<active-branch>` whenever local repository files need to be inspected alongside the diff
-3. Derive `<settled-threads>` from `<pr-context.threads>`:
+3. Derive `<author-decisions>` from `<pr-context.issueComments>` and `<pr-context.threads>`:
+   - Include direct author replies that explicitly decline, defer, or intentionally narrow a suggestion and explain why they do not plan to implement it
+   - Treat each matching author reply as higher priority than `<ticket-context>` for that same concern, unless the current diff introduces a materially different defect with a concrete failure mode
+   - Do not re-raise the same concern solely because `<ticket-context>` still implies a broader scope
+4. Derive `<settled-threads>` from `<pr-context.threads>`:
    - Treat resolved threads as settled
    - Treat threads as settled when they already contain feedback from `<pr-context.viewerLogin>` and a later reply makes it clear the concern was intentionally declined, deferred, or answered without a code change request
    - Treat threads as settled when the author's reply directly answers the concern and the current diff does not add a materially different failure mode
-4. Derive `<prior-review-baseline>` from `<pr-context.reviews>` authored by `<pr-context.viewerLogin>`
-5. Use diff hunks in `<changes>` to map inline comments to the correct lines
-6. Derive `<eligible-findings>` as findings that are:
+5. Derive `<prior-review-baseline>` from `<pr-context.reviews>` authored by `<pr-context.viewerLogin>`
+6. Use diff hunks in `<changes>` to map inline comments to the correct lines
+7. Derive `<eligible-findings>` as findings that are:
     - new in this diff
     - from a previously unreviewed changed area
     - clearly missed material defects with a concrete failure mode
-   Exclude anything already covered by `<settled-threads>` or `<prior-review-baseline>` on the same effective diff.
+   Exclude anything already covered by `<author-decisions>`, `<settled-threads>`, or `<prior-review-baseline>` on the same effective diff.
 
 <%= it.config.shared.prApprove === true ? "Derive `<already-approved>` from existing approvals on `<pr-context.pr.headRefOid>`.\n\n" : "" %>Before publishing, derive: `<has-inline-comments>`, `<has-body-note>`, `<publish-grade>`, and whether each proposed finding is included in `<eligible-findings>`.
 
