@@ -41,11 +41,9 @@ $ARGUMENTS
 ### Align Local Branch
 
 - If `<pr-branch>` is unavailable, STOP and report that the PR head branch could not be determined
-- If `<current-branch>` differs from `<pr-branch>`:
-  - Checkout `<pr-branch>` before inspecting local repository files for this PR review
-  - After checkout, store the active branch as `<active-branch>`
-  - If checkout fails, STOP and report that the PR branch could not be checked out locally
-- Otherwise, store `<current-branch>` as `<active-branch>`
+- Run `gh pr checkout <pr-context.pr.number>` before inspecting local repository files for this PR review
+- After checkout, store the active branch as `<active-branch>`
+- If checkout fails, STOP and report that the PR branch could not be checked out locally
 - Do not inspect local repository code for this PR until `<active-branch>` equals `<pr-branch>`
 
 ### Load Ticket Context

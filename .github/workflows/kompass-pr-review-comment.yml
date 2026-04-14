@@ -1,12 +1,12 @@
-name: Kompass PR Review
+name: Kompass PR Review Comment
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
 
 jobs:
   review:
-    if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository && contains(fromJson('["OWNER","MEMBER"]'), github.event.pull_request.author_association)
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/review') && contains(fromJson('["OWNER","MEMBER"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App Token
@@ -16,9 +16,21 @@ jobs:
           app-id: ${{ secrets.KOMPASS_APP_ID }}
           private-key: ${{ secrets.KOMPASS_APP_PRIVATE_KEY }}
 
+      - name: Get PR details
+        id: pr
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: |
+          gh api /repos/${{ github.repository }}/pulls/${{ github.event.issue.number }} > pr_data.json
+          echo "head_repo=$(jq -r .head.repo.full_name pr_data.json)" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$(jq -r .head.ref pr_data.json)" >> "$GITHUB_OUTPUT"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          repository: ${{ steps.pr.outputs.head_repo }}
+          ref: ${{ steps.pr.outputs.head_ref }}
+          fetch-depth: 0
           token: ${{ steps.token.outputs.token }}
 
       - name: Setup Bun
@@ -36,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.token.outputs.token }}
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-        run: opencode run --model="${{ vars.OPENCODE_MODEL }}" --variant="${{ vars.OPENCODE_VARIANT }}" --thinking --command="pr/review" "${{ github.event.pull_request.number }}"
+        run: opencode run --model="${{ vars.OPENCODE_MODEL }}" --variant="${{ vars.OPENCODE_VARIANT }}" --thinking --command="pr/review" "${{ github.event.issue.number }}"
 
       - name: Export Kompass Session
         if: always()
