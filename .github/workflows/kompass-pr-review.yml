@@ -5,21 +5,8 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
-  debug-gate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Debug PR review gate inputs
-        run: |
-          echo "github.repository=${{ github.repository }}"
-          echo "draft=${{ github.event.pull_request.draft }}"
-          echo "author_association=${{ github.event.pull_request.author_association }}"
-          echo "head_repo_full_name=${{ github.event.pull_request.head.repo.full_name }}"
-          echo "base_repo_full_name=${{ github.event.pull_request.base.repo.full_name }}"
-          echo "actor=${{ github.actor }}"
-          echo "triggering_actor=${{ github.triggering_actor }}"
-
   review:
-    if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository && (github.event.pull_request.author_association == 'OWNER' || github.event.pull_request.author_association == 'MEMBER')
+    if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App Token
