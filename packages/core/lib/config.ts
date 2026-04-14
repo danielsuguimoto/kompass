@@ -48,6 +48,7 @@ export const DEFAULT_COMMAND_NAMES = [
 export const DEFAULT_AGENT_NAMES = ["worker", "navigator", "planner", "reviewer"] as const;
 
 export const DEFAULT_COMPONENT_NAMES = [
+  "align-pr-branch",
   "change-summary",
   "changes-summary",
   "commit",
@@ -129,6 +130,7 @@ export interface KompassConfig {
     ticket_load?: ToolConfig;
   };
   components?: {
+    "align-pr-branch"?: ComponentConfig;
     "change-summary"?: ComponentConfig;
     "changes-summary"?: ComponentConfig;
     commit?: ComponentConfig;
@@ -443,6 +445,7 @@ const defaultAgentPlanner: AgentDefinition = {
 };
 
 const defaultComponentPaths: Record<string, string> = {
+  "align-pr-branch": "components/align-pr-branch.md",
   "change-summary": "components/change-summary.md",
   "changes-summary": "components/changes-summary.md",
   "commit": "components/commit.md",

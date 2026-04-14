@@ -215,6 +215,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "align-pr-branch": {
+          "$ref": "#/$defs/componentConfig"
+        },
         "change-summary": {
           "$ref": "#/$defs/componentConfig"
         },
@@ -243,7 +246,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
+            "enum": ["align-pr-branch", "change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
           },
           "uniqueItems": true,
           "deprecated": true
@@ -251,7 +254,7 @@
         "paths": {
           "type": "object",
           "propertyNames": {
-            "enum": ["change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
+            "enum": ["align-pr-branch", "change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
           },
           "additionalProperties": {
             "type": "string"

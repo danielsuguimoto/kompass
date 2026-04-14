@@ -1,0 +1,5 @@
+- If `<pr-branch>` is unavailable, STOP and report that the PR head branch could not be determined
+- Run `gh pr checkout <pr-context.pr.number>` before <%= it.action %>
+- After checkout, store the active branch as `<active-branch>`
+- If checkout fails, STOP and report that the PR branch could not be checked out locally
+- Do not <%= it.scope %> until `<active-branch>` equals `<pr-branch>`
