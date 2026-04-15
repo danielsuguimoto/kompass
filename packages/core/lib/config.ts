@@ -49,6 +49,7 @@ export const DEFAULT_AGENT_NAMES = ["worker", "navigator", "planner", "reviewer"
 
 export const DEFAULT_COMPONENT_NAMES = [
   "additional-context-priority",
+  "align-pr-branch",
   "change-summary",
   "changes-summary",
   "commit",
@@ -131,6 +132,7 @@ export interface KompassConfig {
   };
   components?: {
     "additional-context-priority"?: ComponentConfig;
+    "align-pr-branch"?: ComponentConfig;
     "change-summary"?: ComponentConfig;
     "changes-summary"?: ComponentConfig;
     commit?: ComponentConfig;
@@ -446,6 +448,7 @@ const defaultAgentPlanner: AgentDefinition = {
 
 const defaultComponentPaths: Record<string, string> = {
   "additional-context-priority": "components/additional-context-priority.md",
+  "align-pr-branch": "components/align-pr-branch.md",
   "change-summary": "components/change-summary.md",
   "changes-summary": "components/changes-summary.md",
   "commit": "components/commit.md",

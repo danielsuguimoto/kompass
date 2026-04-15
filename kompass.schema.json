@@ -218,6 +218,9 @@
         "additional-context-priority": {
           "$ref": "#/$defs/componentConfig"
         },
+        "align-pr-branch": {
+          "$ref": "#/$defs/componentConfig"
+        },
         "change-summary": {
           "$ref": "#/$defs/componentConfig"
         },
@@ -246,7 +249,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["additional-context-priority", "change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
+            "enum": ["additional-context-priority", "align-pr-branch", "change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
           },
           "uniqueItems": true,
           "deprecated": true
@@ -254,7 +257,7 @@
         "paths": {
           "type": "object",
           "propertyNames": {
-            "enum": ["additional-context-priority", "change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
+            "enum": ["additional-context-priority", "align-pr-branch", "change-summary", "changes-summary", "commit", "dev-flow", "load-pr", "load-ticket", "skill-authoring", "summarize-changes"]
           },
           "additionalProperties": {
             "type": "string"

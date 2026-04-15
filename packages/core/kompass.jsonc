@@ -52,6 +52,7 @@
 
   "components": {
     "additional-context-priority": { "enabled": true },
+    "align-pr-branch": { "enabled": true },
     "change-summary": { "enabled": true },
     "changes-summary": { "enabled": true },
     "commit": { "enabled": true },
