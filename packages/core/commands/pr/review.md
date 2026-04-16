@@ -37,7 +37,7 @@ If `<pr-context.pr.body>` links to exactly one clear ticket:
 
 ### Load Changes
 
-Call `changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <pr-context.pr.headRefName>`, and `depthHint: <pr-context.pr.commitCount>` only when it is a positive integer. Store as `<changes>`.
+Call `changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <active-branch>`, and `depthHint: <pr-context.pr.commitCount>` only when it is a positive integer. Store as `<changes>`.
 
 ### Review Changes
 

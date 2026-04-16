@@ -50,13 +50,18 @@ $ARGUMENTS
 - If checkout fails, STOP and report that the PR branch could not be checked out locally
 - Do not inspect or modify local code for this PR until `<active-branch>` equals `<pr-branch>`
 
+### Load Changes
+
+Call `kompass_changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <active-branch>`, and `depthHint: <pr-context.pr.commitCount>` only when it is a positive integer. Store as `<changes>`.
+
 ### Analyze Feedback
 
 Separate true course corrections from noise or already-resolved feedback:
 1. Review `<pr-context.threads>` for open, unresolved conversations
 2. Check `<pr-context.reviews>` for state changes (CHANGES_REQUESTED, etc.)
-3. Prioritize critical issues (bugs, security, broken contracts)
-4. Identify which files need changes
+3. Use `<changes>` to understand the current PR diff before deciding what to adjust
+4. Prioritize critical issues (bugs, security, broken contracts)
+5. Identify which files need changes
 
 Do not blindly follow every suggestion—some may lead you off course.
 
