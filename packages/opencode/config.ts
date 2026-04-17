@@ -1,17 +1,7 @@
 import type { Config } from "@opencode-ai/plugin";
 import type { AgentConfig } from "@opencode-ai/sdk";
 
-import {
-  getEnabledToolNames,
-  loadKompassConfig,
-  mergeWithDefaults,
-  resolveAgents,
-  resolveCommands,
-} from "../core/index.ts";
-import {
-  getConfiguredOpenCodeToolName,
-  prefixKompassToolReferences,
-} from "./tool-names.ts";
+import { loadResolvedAgents, loadResolvedCommands, rewriteKompassToolReferences } from "./cache.ts";
 import type { PluginLogger } from "./logging.ts";
 
 type ApplyConfigOptions = {
@@ -23,16 +13,7 @@ export async function applyAgentsConfig(
   projectRoot: string,
   options?: ApplyConfigOptions,
 ) {
-  const userConfig = await loadKompassConfig(projectRoot);
-  const config = mergeWithDefaults(userConfig);
-  const agents = await resolveAgents(projectRoot);
-  const configuredToolNames = Object.fromEntries(
-    getEnabledToolNames(config.tools).map((toolName) => [
-      toolName,
-      getConfiguredOpenCodeToolName(toolName, config.tools[toolName].name),
-    ]),
-  );
-  const rewriteToolNames = (input: string) => prefixKompassToolReferences(input, configuredToolNames);
+  const agents = await loadResolvedAgents(projectRoot);
 
   cfg.agent ??= {};
 
@@ -40,7 +21,7 @@ export async function applyAgentsConfig(
     const agentConfig: AgentConfig = {
       description: definition.description,
       permission: definition.permission,
-      ...(definition.prompt ? { prompt: rewriteToolNames(definition.prompt) } : {}),
+      ...(definition.prompt ? { prompt: await rewriteKompassToolReferences(projectRoot, definition.prompt) } : {}),
       ...(definition.mode ? { mode: definition.mode } : {}),
     };
     cfg.agent[name] = agentConfig;
@@ -58,16 +39,7 @@ export async function applyCommandsConfig(
   projectRoot: string,
   options?: ApplyConfigOptions,
 ) {
-  const userConfig = await loadKompassConfig(projectRoot);
-  const config = mergeWithDefaults(userConfig);
-  const commands = await resolveCommands(projectRoot);
-  const configuredToolNames = Object.fromEntries(
-    getEnabledToolNames(config.tools).map((toolName) => [
-      toolName,
-      getConfiguredOpenCodeToolName(toolName, config.tools[toolName].name),
-    ]),
-  );
-  const rewriteToolNames = (input: string) => prefixKompassToolReferences(input, configuredToolNames);
+  const commands = await loadResolvedCommands(projectRoot);
 
   cfg.command ??= {};
 
@@ -76,7 +48,7 @@ export async function applyCommandsConfig(
       description: definition.description,
       agent: definition.agent,
       subtask: definition.subtask,
-      template: rewriteToolNames(definition.template),
+      template: await rewriteKompassToolReferences(projectRoot, definition.template),
     };
 
     options?.logger?.info("Loaded Kompass command", {

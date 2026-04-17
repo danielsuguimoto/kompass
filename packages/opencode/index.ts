@@ -9,11 +9,10 @@ import {
   createTicketLoadTool,
   createTicketSyncTool,
   getEnabledToolNames,
-  loadKompassConfig,
-  mergeWithDefaults,
   type MergedKompassConfig,
   type Shell,
 } from "../core/index.ts";
+import { loadConfiguredToolNames, loadMergedKompassConfig } from "./cache.ts";
 import { applyAgentsConfig, applyCommandsConfig } from "./config.ts";
 import { createPluginLogger, getErrorDetails, type PluginLogger } from "./logging.ts";
 import {
@@ -144,16 +143,6 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
     });
   },
   command_expansion(_: PluginInput["$"], _client: PluginInput["client"], config: MergedKompassConfig, projectRoot: string) {
-    const configuredToolNames = Object.fromEntries(
-      getEnabledToolNames(config.tools).map((toolName) => [
-        toolName,
-        getConfiguredOpenCodeToolName(toolName, config.tools[toolName].name),
-      ]),
-    );
-    const definition = createCommandExpansionTool(projectRoot, {
-      rewriteBody: (body) => prefixKompassToolReferences(body, configuredToolNames),
-    });
-
     return tool({
       description: "Expand a delegated command body into a runnable prompt for immediate task execution.",
       args: {
@@ -161,6 +150,11 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
         body: tool.schema.string().describe("Literal body content from the delegate block").optional(),
       },
       execute: async (args, context) => {
+        const configuredToolNames = await loadConfiguredToolNames(projectRoot);
+        const definition = createCommandExpansionTool(projectRoot, {
+          rewriteBody: (body) => prefixKompassToolReferences(body, configuredToolNames),
+        });
+
         context.metadata({
           title: `Command /${args.command.trim()}`,
           metadata: {
@@ -269,8 +263,7 @@ export async function createOpenCodeTools(
   client: PluginInput["client"],
   projectRoot: string,
 ): Promise<Record<string, ToolDefinition>> {
-  const userConfig = await loadKompassConfig(projectRoot);
-  const config = mergeWithDefaults(userConfig);
+  const config = await loadMergedKompassConfig(projectRoot);
   const tools: Record<string, ToolDefinition> = {};
   const logger = createPluginLogger(client, projectRoot);
 
