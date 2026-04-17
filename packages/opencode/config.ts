@@ -1,4 +1,5 @@
-import type { AgentConfig, Config } from "@opencode-ai/sdk";
+import type { Config } from "@opencode-ai/plugin";
+import type { AgentConfig } from "@opencode-ai/sdk";
 
 import {
   getEnabledToolNames,
@@ -44,7 +45,7 @@ export async function applyAgentsConfig(
     };
     cfg.agent[name] = agentConfig;
 
-    await options?.logger?.info("Loaded Kompass agent", {
+    options?.logger?.info("Loaded Kompass agent", {
       agent: name,
       mode: agentConfig.mode,
       promptLength: definition.prompt?.length ?? 0,
@@ -78,7 +79,7 @@ export async function applyCommandsConfig(
       template: rewriteToolNames(definition.template),
     };
 
-    await options?.logger?.info("Loaded Kompass command", {
+    options?.logger?.info("Loaded Kompass command", {
       command: name,
       agent: definition.agent,
       subtask: definition.subtask,

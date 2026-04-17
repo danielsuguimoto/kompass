@@ -60,13 +60,13 @@ function getString(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-async function logObservedFailure(
+function logObservedFailure(
   logger: PluginLogger,
   message: string,
   error: unknown,
   extra?: Record<string, unknown>,
 ) {
-  await logger.warn(message, {
+  logger.warn(message, {
     ...(extra ?? {}),
     ...getErrorDetails(error),
   });
@@ -279,7 +279,7 @@ export async function createOpenCodeTools(
     if (creator) {
       const registeredName = getConfiguredOpenCodeToolName(toolName, config.tools[toolName].name);
       tools[registeredName] = creator($, client, config, projectRoot);
-      await logger.info("Loaded Kompass tool", {
+      logger.info("Loaded Kompass tool", {
         tool: toolName,
         registeredName,
       });
@@ -293,7 +293,7 @@ export const OpenCodeCompassPlugin: Plugin = async (input: PluginInput) => {
   const { $, client, worktree } = input;
   const logger = createPluginLogger(client, worktree);
 
-  await logger.info("Initialized Kompass plugin", {
+  logger.info("Initialized Kompass plugin", {
     directory: getString(input.directory),
     worktree: getString(worktree),
     projectPath: getString((input as { project?: { path?: string } }).project?.path),
@@ -303,7 +303,7 @@ export const OpenCodeCompassPlugin: Plugin = async (input: PluginInput) => {
     try {
       return await createOpenCodeTools($, client, worktree);
     } catch (error) {
-      await logger.warn("Skipping Kompass tool registration", {
+      logger.warn("Skipping Kompass tool registration", {
         ...getErrorDetails(error),
       });
       return {};
@@ -314,7 +314,7 @@ export const OpenCodeCompassPlugin: Plugin = async (input: PluginInput) => {
     try {
       await register();
     } catch (error) {
-      await logger.warn("Skipping Kompass config registration step", {
+      logger.warn("Skipping Kompass config registration step", {
         step: name,
         worktree,
         ...getErrorDetails(error),
@@ -336,13 +336,13 @@ export const OpenCodeCompassPlugin: Plugin = async (input: PluginInput) => {
 
         if (!removedSyntheticHandoff) return;
 
-        await logger.info("Removed synthetic agent handoff text", {
+        logger.info("Removed synthetic agent handoff text", {
           sessionID: input.sessionID,
           messageID: input.messageID,
           agent: input.agent,
         });
       } catch (error) {
-        await logObservedFailure(logger, "chat.message hook failed", error, {
+        logObservedFailure(logger, "chat.message hook failed", error, {
           sessionID: input.sessionID,
           messageID: input.messageID,
           agent: input.agent,
@@ -355,9 +355,9 @@ export const OpenCodeCompassPlugin: Plugin = async (input: PluginInput) => {
 
         if (!commandExecution) return;
 
-        await logger.info("Executing Kompass command", commandExecution as Record<string, unknown>);
+        logger.info("Executing Kompass command", commandExecution as Record<string, unknown>);
       } catch (error) {
-        await logObservedFailure(logger, "command.execute.before hook failed", error, {
+        logObservedFailure(logger, "command.execute.before hook failed", error, {
           command: input.command,
           arguments: input.arguments,
           sessionID: input.sessionID,
@@ -370,9 +370,9 @@ export const OpenCodeCompassPlugin: Plugin = async (input: PluginInput) => {
 
         if (!taskExecution) return;
 
-        await logger.info("Executing Kompass task tool", taskExecution as Record<string, unknown>);
+        logger.info("Executing Kompass task tool", taskExecution as Record<string, unknown>);
       } catch (error) {
-        await logObservedFailure(logger, "tool.execute.before hook failed", error, {
+        logObservedFailure(logger, "tool.execute.before hook failed", error, {
           tool: input.tool,
           callID: input.callID,
           sessionID: input.sessionID,
