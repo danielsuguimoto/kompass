@@ -3,10 +3,10 @@ import type { PluginInput } from "@opencode-ai/plugin";
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 export interface PluginLogger {
-  debug(message: string, extra?: Record<string, unknown>): Promise<void>;
-  info(message: string, extra?: Record<string, unknown>): Promise<void>;
-  warn(message: string, extra?: Record<string, unknown>): Promise<void>;
-  error(message: string, extra?: Record<string, unknown>): Promise<void>;
+  debug(message: string, extra?: Record<string, unknown>): void;
+  info(message: string, extra?: Record<string, unknown>): void;
+  warn(message: string, extra?: Record<string, unknown>): void;
+  error(message: string, extra?: Record<string, unknown>): void;
 }
 
 export function getErrorDetails(error: unknown): Record<string, unknown> {
@@ -24,27 +24,25 @@ export function createPluginLogger(
   client: PluginInput["client"],
   directory: string,
 ): PluginLogger {
-  async function write(level: LogLevel, message: string, extra?: Record<string, unknown>) {
-    try {
-      await client.app.log({
-        query: { directory },
-        body: {
-          service: "kompass",
-          level,
-          message: `[kompass] ${message}`,
-          ...(extra ? { extra } : {}),
-        },
-      });
-    } catch (err) {
+  function dispatch(level: LogLevel, message: string, extra?: Record<string, unknown>) {
+    void client.app.log({
+      query: { directory },
+      body: {
+        service: "kompass",
+        level,
+        message: `[kompass] ${message}`,
+        ...(extra ? { extra } : {}),
+      },
+    }).catch((err) => {
       // Log to console for debugging; plugin behavior must not depend on logging.
       console.error("[kompass] Log write failed:", err);
-    }
+    });
   }
 
   return {
-    debug: (message, extra) => write("debug", message, extra),
-    info: (message, extra) => write("info", message, extra),
-    warn: (message, extra) => write("warn", message, extra),
-    error: (message, extra) => write("error", message, extra),
+    debug: (message, extra) => dispatch("debug", message, extra),
+    info: (message, extra) => dispatch("info", message, extra),
+    warn: (message, extra) => dispatch("warn", message, extra),
+    error: (message, extra) => dispatch("error", message, extra),
   };
 }
