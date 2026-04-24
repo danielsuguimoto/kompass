@@ -35,6 +35,7 @@ $ARGUMENTS
 - Store the loaded change result as `<changes>`
 - Store the current branch from `<changes>` as `<current-branch>` when it is available
 - Store the effective base branch as `<resolved-base>` by preferring `<base>` when it was provided, otherwise using the base branch implied by `<changes>.comparison`
+- When `<changes>.comparison` is not `uncommitted`, describe the PR from the commits ahead of `<resolved-base>`, not from the raw branch comparison string by itself
 
 ### Check Blockers
 
@@ -123,6 +124,7 @@ Use `pr_sync` to create the pull request:
   - `## Checklist`, followed by the checklist items and any subsection headings
 - Use `<resolved-base>` as the base branch when it is defined
 - Do NOT restate the full diff
+- Do NOT rely on the branch diff alone to describe the PR; the description must match the commits ahead of `<resolved-base>`
 - Keep it compact and directional
 - Store the returned URL as `<pr-url>`
 - If `pr_sync` reports that a PR already exists for the branch, treat the result as an existing PR

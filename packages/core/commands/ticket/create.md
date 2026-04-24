@@ -25,6 +25,7 @@ $ARGUMENTS
 <%~ include("@change-summary", { rules: "- If `<base>` is defined: call `changes_load` with the `base` parameter set to `<base>`\n- Otherwise: call `changes_load` with no parameters" }) %>
 
 - Store the loaded change result as `<changes>`
+- When `<changes>.comparison` is not `uncommitted`, describe the ticket from the commits ahead of the resolved base branch, not from branch names alone
 
 ### Check Blockers
 

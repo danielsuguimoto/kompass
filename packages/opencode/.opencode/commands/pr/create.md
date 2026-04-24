@@ -42,19 +42,23 @@ $ARGUMENTS
 - Never pass `uncommitted: true` in this command
 - Store the returned result as `<changes>`
 - Use `<changes>` as the source of truth; no additional git analysis commands are needed
+- When `<changes>.comparison` is not `uncommitted`, treat `<changes>.commits` as the authoritative scope of work: only summarize commits that are ahead of the resolved base branch
+- Do not infer scope from the branch names alone and do not describe work that exists only on the base branch
 
 #### Step 2: Analyze Files
-- Review the paths, statuses, and diffs from `<changes>`
+- Review the paths, statuses, and diffs from `<changes>` only as file-level context for the commits in scope
 - Identify the nature of changes (added, modified, deleted)
 - Note lines added/removed per file
 
 #### Step 3: Group and Summarize
+- For branch comparisons, build the summary from `<changes>.commits` first and use file diffs only to verify or refine what those commits changed
 - Group related changes into logical themes
 - Summarize the "what" and "why" (not the "how")
 
 - Store the loaded change result as `<changes>`
 - Store the current branch from `<changes>` as `<current-branch>` when it is available
 - Store the effective base branch as `<resolved-base>` by preferring `<base>` when it was provided, otherwise using the base branch implied by `<changes>.comparison`
+- When `<changes>.comparison` is not `uncommitted`, describe the PR from the commits ahead of `<resolved-base>`, not from the raw branch comparison string by itself
 
 ### Check Blockers
 
@@ -74,8 +78,10 @@ $ARGUMENTS
 ### Summarize Changes
 
 - Note the comparison mode, base branch, and current branch from the result
+- If the comparison is not `uncommitted`, use only the commits in `<changes>.commits` as the branch-work scope
 - Review commit messages when they are available to understand the delivery narrative
-- Read the most relevant changed source files to understand the changes
+- Read the most relevant changed source files to understand the changes introduced by those commits
+- Do not describe work that exists only on the base branch or that is outside the commits ahead of base
 - Group related changes into themes for the final summary
 
 ### Resolve Ticket
@@ -109,6 +115,7 @@ $ARGUMENTS
 
 When `<ticket-mode>` is `auto`, create the ticket before creating the PR:
 - Reuse the same change themes, rationale, and reviewer-facing validation goals from the current summary work
+- For branch comparisons, ensure every theme is supported by commits in `<changes>.commits`; use file diffs only as supporting context
 - Generate a concise title (max 70 chars) that reflects the delivered outcome
 - Generate a `description` that briefly describes what was accomplished and why it matters
 - Generate checklists with:
@@ -159,6 +166,7 @@ Use `kompass_pr_sync` to create the pull request:
   - `## Checklist`, followed by the checklist items and any subsection headings
 - Use `<resolved-base>` as the base branch when it is defined
 - Do NOT restate the full diff
+- Do NOT rely on the branch diff alone to describe the PR; the description must match the commits ahead of `<resolved-base>`
 - Keep it compact and directional
 - Store the returned URL as `<pr-url>`
 - If `kompass_pr_sync` reports that a PR already exists for the branch, treat the result as an existing PR

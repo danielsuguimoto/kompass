@@ -40,7 +40,7 @@ If `<changes>.comparison` is "uncommitted":
 - Store `uncommitted changes` as `<scope-description>`
 
 If `<changes>.comparison` is not "uncommitted":
-- Treat as reviewing branch changes
+- Treat as reviewing the commits ahead of base plus their resulting file diffs
 - If `<base>` is defined and `<current-branch>` is available, store `<current-branch> -> <base>` as `<scope-description>`
 - Otherwise, store `<changes>.comparison` as `<scope-description>`
 
