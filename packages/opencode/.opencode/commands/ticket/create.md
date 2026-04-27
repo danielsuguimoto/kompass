@@ -33,17 +33,21 @@ $ARGUMENTS
 - Otherwise: call `kompass_changes_load` with no parameters
 - Store the returned result as `<changes>`
 - Use `<changes>` as the source of truth; no additional git analysis commands are needed
+- When `<changes>.comparison` is not `uncommitted`, treat `<changes>.commits` as the authoritative scope of work: only summarize commits that are ahead of the resolved base branch
+- Do not infer scope from the branch names alone and do not describe work that exists only on the base branch
 
 #### Step 2: Analyze Files
-- Review the paths, statuses, and diffs from `<changes>`
+- Review the paths, statuses, and diffs from `<changes>` only as file-level context for the commits in scope
 - Identify the nature of changes (added, modified, deleted)
 - Note lines added/removed per file
 
 #### Step 3: Group and Summarize
+- For branch comparisons, build the summary from `<changes>.commits` first and use file diffs only to verify or refine what those commits changed
 - Group related changes into logical themes
 - Summarize the "what" and "why" (not the "how")
 
 - Store the loaded change result as `<changes>`
+- When `<changes>.comparison` is not `uncommitted`, describe the ticket from the commits ahead of the resolved base branch, not from branch names alone
 
 ### Check Blockers
 
@@ -52,14 +56,17 @@ $ARGUMENTS
 ### Summarize Changes
 
 - Note the comparison mode, base branch, and current branch from the result
+- If the comparison is not `uncommitted`, use only the commits in `<changes>.commits` as the branch-work scope
 - Review commit messages when they are available to understand the delivery narrative
-- Read the most relevant changed source files to understand the changes
+- Read the most relevant changed source files to understand the changes introduced by those commits
+- Do not describe work that exists only on the base branch or that is outside the commits ahead of base
 - Group related changes into themes for the final summary
 
 ### Create Ticket
 
 Use `kompass_ticket_sync` with `refUrl` unset to create the ticket:
 - Reuse the same change themes, rationale, and reviewer-facing validation goals from the current summary work
+- For branch comparisons, ensure every theme is supported by commits in `<changes>.commits`; use file diffs only as supporting context
 - Generate a concise title (max 70 chars) that reflects the delivered outcome
 - Generate a `description` that briefly describes what was accomplished and why it matters
 - Generate checklists with:

@@ -1,4 +1,5 @@
 - Reuse the same change themes, rationale, and reviewer-facing validation goals from the current summary work
+- For branch comparisons, ensure every theme is supported by commits in `<changes>.commits`; use file diffs only as supporting context
 - Generate a concise title (max 70 chars) that reflects the delivered outcome
 - Generate a `description` that briefly describes what was accomplished and why it matters
 - Generate checklists with:
