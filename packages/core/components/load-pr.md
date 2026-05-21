@@ -1,7 +1,7 @@
-- Use `pr_load` as the source of truth for PR selection
-- If `<%= it.ref %>` is defined, call `pr_load` with `pr: <%= it.ref %>`
-- Otherwise, call `pr_load` with no arguments
-- Do not run separate git or GitHub commands just to discover the PR before calling `pr_load`
+- Use `<%= it.config.tools.pr_load.name %>` as the source of truth for PR selection
+- If `<%= it.ref %>` is defined, call `<%= it.config.tools.pr_load.name %>` with `pr: <%= it.ref %>`
+- Otherwise, call `<%= it.config.tools.pr_load.name %>` with no arguments
+- Do not run separate git or GitHub commands just to discover the PR before calling `<%= it.config.tools.pr_load.name %>`
 - Store the result as `<%= it.result %>`
 - Store the PR head branch as `<pr-branch>` from `<%= it.result %>.pr.headRefName` when it is available
 - Run `git branch --show-current` and store the trimmed result as `<current-branch>` when it is available

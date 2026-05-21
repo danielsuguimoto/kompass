@@ -162,6 +162,36 @@ describe("applyCommandsConfig", () => {
       }
     });
 
+    test("registers configured command aliases", async () => {
+      delete process.env.CI;
+      const tempDir = await mkdtemp(path.join(os.tmpdir(), "kompass-command-alias-"));
+
+      try {
+        await mkdir(path.join(tempDir, ".opencode"), { recursive: true });
+        await writeFile(
+          path.join(tempDir, ".opencode", "kompass.jsonc"),
+          `{
+            "commands": {
+              "pr/create": {
+                "enabled": true,
+                "name": "open-pr"
+              }
+            }
+          }`,
+        );
+
+        const cfg: { command?: Record<string, { template: string }> } = {};
+
+        await applyCommandsConfig(cfg as never, tempDir);
+
+        assert.ok(cfg.command?.["open-pr"]);
+        assert.equal(cfg.command?.["pr/create"], undefined);
+        assert.match(cfg.command?.ship.template ?? "", /command="open-pr"/);
+      } finally {
+        await rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
     test("supports object-based command toggles", async () => {
       delete process.env.CI;
       const tempDir = await mkdtemp(path.join(os.tmpdir(), "kompass-command-entries-"));

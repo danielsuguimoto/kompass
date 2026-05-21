@@ -18,11 +18,11 @@ $ARGUMENTS
 
 - **Branch name**: If `<arguments>` looks like a branch reference (e.g., "main", "origin/develop"), store it as `<base>`
 - **Additional context**: If `<arguments>` provides guidance (audience, focus areas, related issues, notes), store it as `<additional-context>`
-- **Empty**: If no `<arguments>` are provided, proceed with defaults and rely on `changes_load` to decide the comparison mode
+- **Empty**: If no `<arguments>` are provided, proceed with defaults and rely on `<%= it.config.tools.changes_load.name %>` to decide the comparison mode
 
 ### Load & Analyze Changes
 
-<%~ include("@change-summary", { rules: "- If `<base>` is defined: call `changes_load` with the `base` parameter set to `<base>`\n- Otherwise: call `changes_load` with no parameters" }) %>
+<%~ include("@change-summary", { config: it.config, rules: "- If `<base>` is defined: call `" + it.config.tools.changes_load.name + "` with the `base` parameter set to `<base>`\n- Otherwise: call `" + it.config.tools.changes_load.name + "` with no parameters" }) %>
 
 - Store the loaded change result as `<changes>`
 - When `<changes>.comparison` is not `uncommitted`, describe the ticket from the commits ahead of the resolved base branch, not from branch names alone
@@ -35,8 +35,8 @@ $ARGUMENTS
 
 ### Create Ticket
 
-Use `ticket_sync` with `refUrl` unset to create the ticket:
-<%~ include("@changes-summary") %>
+Use `<%= it.config.tools.ticket_sync.name %>` with `refUrl` unset to create the ticket:
+<%~ include("@changes-summary", { config: it.config }) %>
 - Set `assignees` to `[@me]` so the created ticket is assigned to yourself as the author
 - Store the generated title as `<ticket-title>`
 - Store the created issue URL as `<ticket-url>`

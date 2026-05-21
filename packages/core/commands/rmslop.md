@@ -22,7 +22,7 @@ $ARGUMENTS
 
 ### Load Changes
 
-- Call `changes_load` to get the diff against `<base>` when defined, otherwise use the default comparison
+- Call `<%= it.config.tools.changes_load.name %>` to get the diff against `<base>` when defined, otherwise use the default comparison
 - Store the result as `<changes>`
 - Store `<changes>.comparison` as `<scope-summary>`
 

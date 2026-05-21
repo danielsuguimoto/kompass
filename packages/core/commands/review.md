@@ -23,7 +23,7 @@ $ARGUMENTS
 
 ### Load Changes
 
-Call `changes_load`:
+Call `<%= it.config.tools.changes_load.name %>`:
 - If `<base>` is defined: pass `base: <base>`
 - Otherwise: call with no parameters (auto-detects uncommitted vs branch comparison)
 
@@ -47,7 +47,7 @@ Following the reviewer agent guidance:
 
 While reading files:
 - Load any relevant nested `AGENTS.md` in the current session before applying review criteria
-- For deleted files, inspect prior contents from git because `changes_load` does not provide full deleted-file contents
+- For deleted files, inspect prior contents from git because `<%= it.config.tools.changes_load.name %>` does not provide full deleted-file contents
 - Use a helper agent only if the changed-file set is too large to review comfortably in one session after the changed paths are already known
 
 ### Output

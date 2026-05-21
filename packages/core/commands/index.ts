@@ -1,5 +1,14 @@
 import { renderTemplate } from "../lib/components.ts";
-import { loadKompassConfig, mergeWithDefaults } from "../lib/config.ts";
+import {
+  getConfiguredAgentNames,
+  getConfiguredCommandNames,
+  getConfiguredToolNames,
+  loadKompassConfig,
+  mergeWithDefaults,
+  type AgentName,
+  type CommandName,
+  type ToolName,
+} from "../lib/config.ts";
 import { loadProjectText } from "../lib/text.ts";
 
 interface CommandDefinition {
@@ -144,13 +153,34 @@ async function loadComponents(
 
 export async function resolveCommands(
   projectRoot: string,
-  options?: { ci?: boolean },
+  options?: {
+    ci?: boolean;
+    names?: {
+      tools?: Partial<Record<ToolName, { name: string }>>;
+      commands?: Partial<Record<CommandName, { name: string }>>;
+      agents?: Partial<Record<AgentName, { name: string }>>;
+    };
+  },
 ): Promise<Record<string, ResolvedCommandDefinition>> {
   const userConfig = await loadKompassConfig(projectRoot);
   const config = mergeWithDefaults(userConfig);
   const isCi = options?.ci ?? !!process.env.CI;
 
   const components = await loadComponents(config.components.paths);
+  const names = {
+    tools: {
+      ...getConfiguredToolNames(config.tools),
+      ...(options?.names?.tools ?? {}),
+    },
+    commands: {
+      ...getConfiguredCommandNames(config.commands),
+      ...(options?.names?.commands ?? {}),
+    },
+    agents: {
+      ...getConfiguredAgentNames(config.agents),
+      ...(options?.names?.agents ?? {}),
+    },
+  };
   const commands: Record<string, ResolvedCommandDefinition> = {};
 
   for (const name of config.commands.enabled) {
@@ -171,6 +201,9 @@ export async function resolveCommands(
       ...commandConfig,
       config: {
         shared: config.shared,
+        tools: names.tools,
+        commands: names.commands,
+        agents: names.agents,
       },
     };
 
@@ -182,9 +215,11 @@ export async function resolveCommands(
       continue;
     }
 
-    commands[name] = {
+    const resolvedName = names.commands[name as CommandName]?.name ?? name;
+
+    commands[resolvedName] = {
       description: definition.description,
-      agent: definition.agent,
+      agent: names.agents[definition.agent as AgentName]?.name ?? definition.agent,
       subtask: definition.subtask ?? !isCi,
       template,
       ...(Object.keys(commandConfig).length > 0 ? { config: commandConfig } : {}),

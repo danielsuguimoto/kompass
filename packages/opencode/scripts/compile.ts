@@ -11,22 +11,21 @@ import { mkdir, writeFile, rm, access } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PACKAGE_ROOT = path.resolve(__dirname, "..");
-const WORKSPACE_ROOT = path.resolve(PACKAGE_ROOT, "..", "..");
-const OUTPUT_DIR = path.resolve(PACKAGE_ROOT, ".opencode");
 import {
+  getConfiguredAgentNames,
+  getConfiguredCommandNames,
   getEnabledToolNames,
   loadKompassConfig,
   mergeWithDefaults,
   resolveAgents,
   resolveCommands,
 } from "../../core/index.ts";
-import {
-  getConfiguredOpenCodeToolName,
-  prefixKompassToolReferences,
-} from "../tool-names.ts";
+import { getConfiguredOpenCodeToolName } from "../tool-names.ts";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PACKAGE_ROOT = path.resolve(__dirname, "..");
+const WORKSPACE_ROOT = path.resolve(PACKAGE_ROOT, "..", "..");
+const OUTPUT_DIR = path.resolve(PACKAGE_ROOT, ".opencode");
 
 function ensureTrailingNewline(text: string) {
   return text.endsWith("\n") ? text : `${text}\n`;
@@ -53,16 +52,20 @@ async function main() {
   const config = mergeWithDefaults(userConfig);
   const enabledTools = getEnabledToolNames(config.tools);
   const configuredToolNames = Object.fromEntries(
-    enabledTools.map((toolName) => [
+    Object.entries(config.tools).map(([toolName, toolConfig]) => [
       toolName,
-      getConfiguredOpenCodeToolName(toolName, config.tools[toolName].name),
+      { name: getConfiguredOpenCodeToolName(toolName, toolConfig.name) },
     ]),
   );
-  const rewriteToolNames = (input: string) => prefixKompassToolReferences(input, configuredToolNames);
+  const names = {
+    tools: configuredToolNames,
+    commands: getConfiguredCommandNames(config.commands),
+    agents: getConfiguredAgentNames(config.agents),
+  };
 
   // Compile commands
   console.log("\nCompiling commands...");
-  const compiledCommands = await resolveCommands(WORKSPACE_ROOT, { ci: false });
+  const compiledCommands = await resolveCommands(WORKSPACE_ROOT, { ci: false, names });
   console.log(`  Compiled ${Object.keys(compiledCommands).length} commands`);
 
   // Create output directories
@@ -87,7 +90,7 @@ async function main() {
       agent: command.agent,
     });
     const content = ensureTrailingNewline(
-      `---\n${frontmatter}---\n\n${rewriteToolNames(command.template)}`,
+      `---\n${frontmatter}---\n\n${command.template}`,
     );
     await writeFile(filepath, content);
     console.log(`  commands/${name}.md`);
@@ -95,7 +98,7 @@ async function main() {
 
   // Compile agents
   console.log("\nCompiling agents...");
-  const resolvedAgents = await resolveAgents(WORKSPACE_ROOT);
+  const resolvedAgents = await resolveAgents(WORKSPACE_ROOT, { names });
 
   for (const [agentName, agent] of Object.entries(resolvedAgents)) {
     if (!agent) continue;
@@ -111,7 +114,7 @@ async function main() {
       });
 
       const content = ensureTrailingNewline(
-        `---\n${frontmatter}---\n${agent.prompt ? `\n${rewriteToolNames(agent.prompt)}` : ""}`,
+        `---\n${frontmatter}---\n${agent.prompt ? `\n${agent.prompt}` : ""}`,
       );
       await writeFile(filepath, content);
       console.log(`  agents/${filename}`);

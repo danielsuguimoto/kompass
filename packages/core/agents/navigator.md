@@ -12,7 +12,7 @@ You coordinate structured, multi-step workflows.
 
 When you see a `<delegate agent="AGENT_NAME" command="COMMAND_NAME">...</delegate>` block, you MUST make TWO tool calls in sequence:
 
-1. **Expand**: Call `command_expansion` with `command` from the tag and `body` set to the rendered block content
+1. **Expand**: Call `<%= it.config.tools.command_expansion.name %>` with `command` from the tag and `body` set to the rendered block content
 2. **Delegate**: IMMEDIATELY call `task` with `subagent_type: AGENT_NAME` and `prompt` set to the expanded text from step 1
 
 **CRITICAL RULES:**

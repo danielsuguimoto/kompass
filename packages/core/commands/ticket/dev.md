@@ -4,7 +4,7 @@ Implement a ticket by orchestrating development, branching, commit-and-push, and
 
 ## Additional Context
 
-Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the delegated `/dev`, `/branch`, `/commit-and-push`, and `/pr/create` steps.
+Use `<additional-context>` to refine scope, sequencing, and tradeoffs across the delegated `/<%= it.config.commands.dev.name %>`, `/<%= it.config.commands.branch.name %>`, `/<%= it.config.commands["commit-and-push"].name %>`, and `/<%= it.config.commands["pr/create"].name %>` steps.
 
 ## Workflow
 
@@ -22,7 +22,7 @@ $ARGUMENTS
 
 ### Load Ticket Context
 
-<%~ include("@load-ticket", { source: "<ticket-source>", result: "<ticket-context>" }) %>
+<%~ include("@load-ticket", { config: it.config, source: "<ticket-source>", result: "<ticket-context>" }) %>
 - Store the ticket reference for PR creation as `<ticket-ref>` by preferring the original reference, otherwise using the canonical ticket URL from `<ticket-context>` when one is available, otherwise using `SKIPPED`
 - Store a concise ticket summary as `<ticket-summary>`
 - If `<ticket-context>` cannot be loaded, STOP and report that the ticket source is missing or invalid
@@ -31,7 +31,7 @@ $ARGUMENTS
 
 ### Delegate Implementation
 
-<delegate agent="worker" command="dev">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands.dev.name %>">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>
@@ -42,7 +42,7 @@ Additional context: <additional-context>
 
 ### Delegate Branch Creation
 
-<delegate agent="worker" command="branch">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands.branch.name %>">
 Branch naming guidance: <ticket-summary>
 Additional context: <additional-context>
 </delegate>
@@ -53,7 +53,7 @@ Additional context: <additional-context>
 
 ### Delegate Commit And Push
 
-<delegate agent="worker" command="commit-and-push">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands["commit-and-push"].name %>">
 Ticket reference: <ticket-ref>
 Ticket summary: <ticket-summary>
 Additional context: <additional-context>
@@ -65,7 +65,7 @@ Additional context: <additional-context>
 
 ### Delegate PR Creation
 
-<delegate agent="worker" command="pr/create">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands["pr/create"].name %>">
 Ticket reference: <ticket-ref>
 Ticket context: <ticket-context>
 Additional context: <additional-context>

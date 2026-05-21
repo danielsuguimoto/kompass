@@ -1,5 +1,5 @@
 #### Step 1: Load Changes
-- call `changes_load`
+- call `<%= it.config.tools.changes_load.name %>`
 <%= it.rules ?? "" %>
 - Store the returned result as `<changes>`
 - Use `<changes>` as the source of truth; no additional git analysis commands are needed

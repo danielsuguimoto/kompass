@@ -24,7 +24,7 @@ $ARGUMENTS
 ### Load Request Context
 
 - If `<request-source>` is defined:
-<%~ include("@load-ticket", { source: "<request-source>", result: "<request-context>" }) %>
+<%~ include("@load-ticket", { config: it.config, source: "<request-source>", result: "<request-context>" }) %>
 - Otherwise, treat `<request>` as `<request-context>`
 - If `<request-context>` cannot be determined, STOP and report that the implementation request is missing
 

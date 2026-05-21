@@ -42,7 +42,7 @@ $ARGUMENTS
 
 ### Delegate Planning
 
-<delegate agent="planner" command="ticket/plan">
+<delegate agent="<%= it.config.agents.planner.name %>" command="<%= it.config.commands["ticket/plan"].name %>">
 Task: <task>
 Task context: <task-context>
 Additional context: <additional-context>
@@ -65,7 +65,7 @@ Additional context: <additional-context>
 - Only run the revised planning block below when the user requests changes
 - If the user approves the current plan, skip the revised planning block and continue to implementation
 
-<delegate agent="planner" command="ticket/plan">
+<delegate agent="<%= it.config.agents.planner.name %>" command="<%= it.config.commands["ticket/plan"].name %>">
 Task: <task>
 Task context: <task-context>
 Current plan: <plan>
@@ -80,7 +80,7 @@ Additional context: <additional-context>
 
 ### Delegate Implementation
 
-<delegate agent="worker" command="dev">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands.dev.name %>">
 Plan: <plan>
 Task: <task>
 Task context: <task-context>
@@ -92,7 +92,7 @@ Additional context: <additional-context>
 
 ### Delegate Commit
 
-<delegate agent="worker" command="commit">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands.commit.name %>">
 Task: <task>
 Additional context: <additional-context>
 </delegate>
