@@ -23,7 +23,7 @@ $ARGUMENTS
 
 ### Delegate Branch Creation
 
-<delegate agent="worker" command="branch">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands.branch.name %>">
 Branch naming guidance: <branch-context>
 </delegate>
 
@@ -35,7 +35,7 @@ Branch naming guidance: <branch-context>
 
 ### Delegate Commit
 
-<delegate agent="worker" command="commit">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands.commit.name %>">
 Additional context: <additional-context>
 </delegate>
 
@@ -46,7 +46,7 @@ Additional context: <additional-context>
 
 ### Delegate PR Creation
 
-<delegate agent="worker" command="pr/create">
+<delegate agent="<%= it.config.agents.worker.name %>" command="<%= it.config.commands["pr/create"].name %>">
 Base branch: <base>
 Additional context: <additional-context>
 </delegate>

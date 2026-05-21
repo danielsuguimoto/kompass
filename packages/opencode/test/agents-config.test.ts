@@ -1,5 +1,6 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -90,5 +91,33 @@ describe("applyAgentsConfig", () => {
       question: "allow",
       todowrite: "allow",
     });
+  });
+
+  test("registers configured agent aliases", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "kompass-agent-alias-"));
+
+    try {
+      await mkdir(path.join(tempDir, ".opencode"), { recursive: true });
+      await writeFile(
+        path.join(tempDir, ".opencode", "kompass.jsonc"),
+        `{
+          "agents": {
+            "reviewer": {
+              "enabled": true,
+              "name": "code-reviewer"
+            }
+          }
+        }`,
+      );
+
+      const cfg: { agent?: Record<string, { description: string }> } = {};
+
+      await applyAgentsConfig(cfg as never, tempDir);
+
+      assert.ok(cfg.agent?.["code-reviewer"]);
+      assert.equal(cfg.agent?.reviewer, undefined);
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
   });
 });

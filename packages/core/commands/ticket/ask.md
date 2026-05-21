@@ -25,7 +25,7 @@ $ARGUMENTS
 
 ### Load Ticket Context
 
-<%~ include("@load-ticket", { source: "<ticket-url>", result: "<ticket-context>", comments: true }) %>
+<%~ include("@load-ticket", { config: it.config, source: "<ticket-url>", result: "<ticket-context>", comments: true }) %>
 - If `<ticket-url>` is missing or `<ticket-context>` cannot be loaded, STOP and report that the ticket context is missing or invalid
 
 ### Draft The Answer
@@ -36,7 +36,7 @@ $ARGUMENTS
 
 ### Sync Ticket
 
-- Use `ticket_sync` with:
+- Use `<%= it.config.tools.ticket_sync.name %>` with:
   - `refUrl: <ticket-url>`
   - `comments: [<ticket-answer>]`
 - Store the returned ticket URL as `<ticket-url>`

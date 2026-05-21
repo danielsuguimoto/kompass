@@ -1,4 +1,5 @@
 import { resolveCommands } from "../commands/index.ts";
+import type { AgentName, CommandName, ToolName } from "../lib/config.ts";
 import type { ToolDefinition, ToolExecutionContext } from "./shared.ts";
 
 export type CommandExpansion = {
@@ -9,7 +10,11 @@ export type CommandExpansion = {
 };
 
 type ResolveCommandExpansionOptions = {
-  rewriteBody?: (body: string) => string;
+  names?: {
+    tools?: Partial<Record<ToolName, { name: string }>>;
+    commands?: Partial<Record<CommandName, { name: string }>>;
+    agents?: Partial<Record<AgentName, { name: string }>>;
+  };
 };
 
 type CommandExpansionInput = {
@@ -47,7 +52,7 @@ export async function resolveCommandExpansion(
     throw new Error("command_expansion requires a command");
   }
 
-  const commands = await resolveCommands(projectRoot);
+  const commands = await resolveCommands(projectRoot, { names: options?.names });
   const definition = commands[normalizedCommand];
 
   if (!definition) {
@@ -59,11 +64,7 @@ export async function resolveCommandExpansion(
     };
   }
 
-  let prompt = expandCommandTemplate(definition.template, normalizedBody);
-
-  if (options?.rewriteBody) {
-    prompt = options.rewriteBody(prompt);
-  }
+  const prompt = expandCommandTemplate(definition.template, normalizedBody);
 
   return {
     command: normalizedCommand,

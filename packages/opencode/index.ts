@@ -12,12 +12,11 @@ import {
   type MergedKompassConfig,
   type Shell,
 } from "../core/index.ts";
-import { loadConfiguredToolNames, loadMergedKompassConfig } from "./cache.ts";
+import { loadConfiguredNames, loadMergedKompassConfig } from "./cache.ts";
 import { applyAgentsConfig, applyCommandsConfig } from "./config.ts";
 import { createPluginLogger, getErrorDetails, type PluginLogger } from "./logging.ts";
 import {
   getConfiguredOpenCodeToolName,
-  prefixKompassToolReferences,
 } from "./tool-names.ts";
 
 const AGENT_HANDOFF_MARKER = "generate a prompt and call the task tool with subagent:";
@@ -150,10 +149,8 @@ const opencodeToolCreators: Record<string, OpenCodeToolCreator> = {
         body: tool.schema.string().describe("Literal body content from the delegate block").optional(),
       },
       execute: async (args, context) => {
-        const configuredToolNames = await loadConfiguredToolNames(projectRoot);
-        const definition = createCommandExpansionTool(projectRoot, {
-          rewriteBody: (body) => prefixKompassToolReferences(body, configuredToolNames),
-        });
+        const names = await loadConfiguredNames(projectRoot);
+        const definition = createCommandExpansionTool(projectRoot, { names });
 
         context.metadata({
           title: `Command /${args.command.trim()}`,

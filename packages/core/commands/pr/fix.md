@@ -22,11 +22,11 @@ $ARGUMENTS
 - If `<arguments>` looks like a PR number (e.g., "123") or URL, store it as `<pr-ref>`
 - If `<arguments>` includes extra fix guidance, scope constraints, or priorities, store it as `<additional-context>`
 - Otherwise, store `<execution-mode>` as `review`
-- If empty, leave `<pr-ref>` undefined and let `pr_load` resolve the default PR context
+- If empty, leave `<pr-ref>` undefined and let `<%= it.config.tools.pr_load.name %>` resolve the default PR context
 
 ### Load PR Context
 
-<%~ include("@load-pr", { ref: "<pr-ref>", result: "<pr-context>" }) %>
+<%~ include("@load-pr", { config: it.config, ref: "<pr-ref>", result: "<pr-context>" }) %>
 
 ### Align Local Branch
 
@@ -34,7 +34,7 @@ $ARGUMENTS
 
 ### Load Changes
 
-Call `changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <active-branch>`, and `depthHint: <pr-context.pr.commitCount>` only when it is a positive integer. Store as `<changes>`.
+Call `<%= it.config.tools.changes_load.name %>` with `base: <pr-context.pr.baseRefName>`, `head: <active-branch>`, and `depthHint: <pr-context.pr.commitCount>` only when it is a positive integer. Store as `<changes>`.
 
 ### Analyze Feedback
 
@@ -113,17 +113,17 @@ If validation passes:
 
 Only after commit and push succeed, reply to addressed threads:
 - Keep replies short and factual—clear signals, no chatter
-- Use `pr_sync` to post comments or replies:
+- Use `<%= it.config.tools.pr_sync.name %>` to post comments or replies:
 
 ```
 # General PR comment
-pr_sync refUrl="<pr-context.pr.url>" commentBody="<reply-text>"
+<%= it.config.tools.pr_sync.name %> refUrl="<pr-context.pr.url>" commentBody="<reply-text>"
 
 # Reply to a specific review thread (use comment.id from threads.comments)
-pr_sync refUrl="<pr-context.pr.url>" replies=[{"inReplyTo": <comment-id>, "body": "<reply-text>"}]
+<%= it.config.tools.pr_sync.name %> refUrl="<pr-context.pr.url>" replies=[{"inReplyTo": <comment-id>, "body": "<reply-text>"}]
 
 # Follow-up inline review comment on a specific line
-pr_sync refUrl="<pr-context.pr.url>" commitId="<commit-sha>" review={"comments": [{"path": "<file-path>", "line": <line-number>, "body": "<reply-text>"}]}
+<%= it.config.tools.pr_sync.name %> refUrl="<pr-context.pr.url>" commitId="<commit-sha>" review={"comments": [{"path": "<file-path>", "line": <line-number>, "body": "<reply-text>"}]}
 ```
 
 Confirm which feedback was addressed and which was intentionally not followed.

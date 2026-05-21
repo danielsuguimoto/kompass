@@ -31,16 +31,18 @@ Shared render-time guidance, including:
 
 ### `commands`
 
-Controls command availability and template overrides.
+Controls command availability, template overrides, and adapter-facing command names.
 
 - `<name>.enabled`
+- `<name>.name`
 - `<name>.template`
 - legacy `enabled` and `templates` fields are still recognized for compatibility
 
 ### `agents`
 
-Controls bundled agent definitions and enablement.
+Controls bundled agent definitions, enablement, and adapter-facing agent names.
 
+- `name`
 - `description`
 - `promptPath`
 - `permission`
@@ -66,7 +68,7 @@ Adapter-specific configuration. Today this includes:
 
 ## Tool alias example
 
-You can keep a Kompass tool enabled but expose it under a custom adapter-facing name:
+You can keep bundled surfaces enabled but expose them under custom adapter-facing names. OpenCode tool defaults use `kompass_<tool>`, such as `kompass_ticket_load`; command and agent defaults use their config keys. Built-in command, component, and agent templates read resolved names from render config values like `<%= it.config.tools.ticket_load.name %>`.
 
 ```jsonc
 {
@@ -74,6 +76,18 @@ You can keep a Kompass tool enabled but expose it under a custom adapter-facing 
     "ticket_sync": {
       "enabled": true,
       "name": "custom_ticket_name"
+    }
+  },
+  "commands": {
+    "pr/create": {
+      "enabled": true,
+      "name": "open-pr"
+    }
+  },
+  "agents": {
+    "reviewer": {
+      "enabled": true,
+      "name": "code-reviewer"
     }
   }
 }

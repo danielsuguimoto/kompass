@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export interface AgentDefinition {
+  name?: string;
   description: string;
   promptPath?: string;
   permission: Record<string, string>;
@@ -74,6 +75,7 @@ export interface ToggleConfig {
 }
 
 export interface CommandConfig extends ToggleConfig {
+  name?: string;
   template?: string;
   [key: string]: unknown;
 }
@@ -526,6 +528,36 @@ export function getConfiguredToolName(
   toolName: ToolName,
 ): string {
   return tools[toolName].name ?? toolName;
+}
+
+export function getConfiguredToolNames(
+  tools: MergedKompassConfig["tools"],
+): Record<ToolName, { name: string }> {
+  return Object.fromEntries(
+    DEFAULT_TOOL_NAMES.map((toolName) => [toolName, { name: getConfiguredToolName(tools, toolName) }]),
+  ) as Record<ToolName, { name: string }>;
+}
+
+export function getConfiguredCommandNames(
+  commands: MergedKompassConfig["commands"],
+): Record<CommandName, { name: string }> {
+  return Object.fromEntries(
+    DEFAULT_COMMAND_NAMES.map((commandName) => [
+      commandName,
+      { name: commands.entries[commandName]?.name ?? commandName },
+    ]),
+  ) as Record<CommandName, { name: string }>;
+}
+
+export function getConfiguredAgentNames(
+  agents: MergedKompassConfig["agents"],
+): Record<AgentName, { name: string }> {
+  return Object.fromEntries(
+    DEFAULT_AGENT_NAMES.map((agentName) => [
+      agentName,
+      { name: agents[agentName].name ?? agentName },
+    ]),
+  ) as Record<AgentName, { name: string }>;
 }
 
 export function mergeWithDefaults(

@@ -10,4 +10,4 @@
 - Merge tiny themes together instead of creating a section per file or implementation detail
 - Do not restate the full diff
 - Do not use execution-status notes such as `Validation not run in this session` as checklist items
-- If `changes_load` reports uncommitted work, make that clear in the ticket wording
+- If `<%= it.config.tools.changes_load.name %>` reports uncommitted work, make that clear in the ticket wording

@@ -30,7 +30,7 @@ $ARGUMENTS
 
 ### Load & Analyze Changes
 
-<%~ include("@change-summary", { rules: "- If `<base>` is defined: call `changes_load` with the `base` parameter set to `<base>`\n- Otherwise: call `changes_load` with no parameters\n- Never pass `uncommitted: true` in this command" }) %>
+<%~ include("@change-summary", { config: it.config, rules: "- If `<base>` is defined: call `" + it.config.tools.changes_load.name + "` with the `base` parameter set to `<base>`\n- Otherwise: call `" + it.config.tools.changes_load.name + "` with no parameters\n- Never pass `uncommitted: true` in this command" }) %>
 
 - Store the loaded change result as `<changes>`
 - Store the current branch from `<changes>` as `<current-branch>` when it is available
@@ -44,7 +44,7 @@ $ARGUMENTS
   - Report: "There are uncommitted changes. Please commit or stash them before creating a PR."
   - List the changed files from `<changes>`
   - Do NOT proceed further
-- Treat this as a blocker only when `changes_load` returns `comparison: "uncommitted"` from the default call above; never force that mode during PR creation
+- Treat this as a blocker only when `<%= it.config.tools.changes_load.name %>` returns `comparison: "uncommitted"` from the default call above; never force that mode during PR creation
 - If `<current-branch>` equals `<resolved-base>`:
   - STOP immediately
   - Report: "You are currently on the base branch (<resolved-base>). Please checkout a feature branch before creating a PR."
@@ -84,8 +84,8 @@ $ARGUMENTS
 ### Prepare Ticket Reference
 
 When `<ticket-mode>` is `auto`, create the ticket before creating the PR:
-<%~ include("@changes-summary") %>
-- Use `ticket_sync` with `refUrl` unset
+<%~ include("@changes-summary", { config: it.config }) %>
+- Use `<%= it.config.tools.ticket_sync.name %>` with `refUrl` unset
 - Set `assignees` to `[@me]` so the created ticket is assigned to yourself as the author
 - Store the created issue reference or URL as `<ticket-url>`
 
@@ -106,7 +106,7 @@ Run `git push` and use its output as the source of truth.
 
 ### Create PR
 
-Use `pr_sync` to create the pull request:
+Use `<%= it.config.tools.pr_sync.name %>` to create the pull request:
 - This step is PR creation only
 - Omit `review`, `replies`, `commentBody`, and `commitId` entirely unless you are intentionally updating or reviewing an existing PR instead of creating one
 - Generate a concise title (max 70 chars) summarizing the change and store it as `<pr-title>`
@@ -127,7 +127,7 @@ Use `pr_sync` to create the pull request:
 - Do NOT rely on the branch diff alone to describe the PR; the description must match the commits ahead of `<resolved-base>`
 - Keep it compact and directional
 - Store the returned URL as `<pr-url>`
-- If `pr_sync` reports that a PR already exists for the branch, treat the result as an existing PR
+- If `<%= it.config.tools.pr_sync.name %>` reports that a PR already exists for the branch, treat the result as an existing PR
 - Track whether the branch was pushed during this run and report that status in the final response
 
 ### Output

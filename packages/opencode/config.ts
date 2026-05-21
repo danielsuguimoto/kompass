@@ -1,7 +1,7 @@
 import type { Config } from "@opencode-ai/plugin";
 import type { AgentConfig } from "@opencode-ai/sdk";
 
-import { loadResolvedAgents, loadResolvedCommands, rewriteKompassToolReferences } from "./cache.ts";
+import { loadResolvedAgents, loadResolvedCommands } from "./cache.ts";
 import type { PluginLogger } from "./logging.ts";
 
 type ApplyConfigOptions = {
@@ -21,7 +21,7 @@ export async function applyAgentsConfig(
     const agentConfig: AgentConfig = {
       description: definition.description,
       permission: definition.permission,
-      ...(definition.prompt ? { prompt: await rewriteKompassToolReferences(projectRoot, definition.prompt) } : {}),
+      ...(definition.prompt ? { prompt: definition.prompt } : {}),
       ...(definition.mode ? { mode: definition.mode } : {}),
     };
     cfg.agent[name] = agentConfig;
@@ -48,7 +48,7 @@ export async function applyCommandsConfig(
       description: definition.description,
       agent: definition.agent,
       subtask: definition.subtask,
-      template: await rewriteKompassToolReferences(projectRoot, definition.template),
+      template: definition.template,
     };
 
     options?.logger?.info("Loaded Kompass command", {

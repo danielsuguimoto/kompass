@@ -18,11 +18,11 @@ $ARGUMENTS
 
 - If `<arguments>` looks like a PR number (e.g., "123") or URL, store it as `<pr-ref>`
 - If `<arguments>` includes review focus areas, related tickets, or special concerns, store it as `<additional-context>`
-- If empty, leave `<pr-ref>` undefined and let `pr_load` resolve the default PR context
+- If empty, leave `<pr-ref>` undefined and let `<%= it.config.tools.pr_load.name %>` resolve the default PR context
 
 ### Load PR Context
 
-<%~ include("@load-pr", { ref: "<pr-ref>", result: "<pr-context>" }) %>
+<%~ include("@load-pr", { config: it.config, ref: "<pr-ref>", result: "<pr-context>" }) %>
 
 ### Align Local Branch
 
@@ -32,12 +32,12 @@ $ARGUMENTS
 
 If `<pr-context.pr.body>` links to exactly one clear ticket:
 - Store that reference as `<ticket-ref>`
-<%~ include("@load-ticket", { source: "<ticket-ref>", result: "<ticket-context>", comments: true }) %>
+<%~ include("@load-ticket", { config: it.config, source: "<ticket-ref>", result: "<ticket-context>", comments: true }) %>
 - Use `<ticket-context>` for consideration during review
 
 ### Load Changes
 
-Call `changes_load` with `base: <pr-context.pr.baseRefName>`, `head: <active-branch>`, and `depthHint: <pr-context.pr.commitCount>` only when it is a positive integer. Store as `<changes>`.
+Call `<%= it.config.tools.changes_load.name %>` with `base: <pr-context.pr.baseRefName>`, `head: <active-branch>`, and `depthHint: <pr-context.pr.commitCount>` only when it is a positive integer. Store as `<changes>`.
 
 ### Review Changes
 
@@ -87,17 +87,17 @@ For multi-line: add `startLine`. For deleted lines: use `side: "LEFT"`.
 **If `<publish-grade>` is `★★★★★`:**
 <% if (it.config.shared.prApprove === true) { -%>
 - Already approved → skip
-- Otherwise → first call `pr_sync` with `refUrl: <pr-context.pr.url>` and only `review.approve: true`
-- If that approval call fails, immediately call `pr_sync` again with `refUrl: <pr-context.pr.url>` and `review.body` starting with `★★★★★`
+- Otherwise → first call `<%= it.config.tools.pr_sync.name %>` with `refUrl: <pr-context.pr.url>` and only `review.approve: true`
+- If that approval call fails, immediately call `<%= it.config.tools.pr_sync.name %>` again with `refUrl: <pr-context.pr.url>` and `review.body` starting with `★★★★★`
 - If there are no positive summary notes for the fallback review, the fallback body must be exactly `★★★★★`
 - Do not pass `review.comments` in the approval attempt or the fallback review
 <% } else { -%>
-- `pr_sync` with `refUrl: <pr-context.pr.url>` and `review.body` starting with `★★★★★`
+- `<%= it.config.tools.pr_sync.name %>` with `refUrl: <pr-context.pr.url>` and `review.body` starting with `★★★★★`
 - If there are no positive summary notes, the body must be exactly `★★★★★`
 - Do not pass `review.comments`
 <% } %>
 **If `<publish-grade>` is below `★★★★★`:**
-- Call `pr_sync` with:
+- Call `<%= it.config.tools.pr_sync.name %>` with:
   - `refUrl: <pr-context.pr.url>`
   - `review.body`: the grade line first (for example `★★★☆☆`), followed by any non-inline notes
   - `review.comments`: inline comments (changed lines only) - **skip lines or concerns already covered by open threads in `<pr-context.threads>` unless the new diff introduces a materially different failure mode**
@@ -105,7 +105,7 @@ For multi-line: add `startLine`. For deleted lines: use `side: "LEFT"`.
 - Never omit the grade from `review.body` in this branch
 - Do not pass any other fields
 
-If `pr_sync` returns a review URL, store it as `<review-url>`.
+If `<%= it.config.tools.pr_sync.name %>` returns a review URL, store it as `<review-url>`.
 
 ### Output
 

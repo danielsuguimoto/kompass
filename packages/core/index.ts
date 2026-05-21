@@ -3,6 +3,9 @@ export type { ResolvedAgentDefinition } from "./agents/index.ts";
 export { resolveCommands, commandDefinitions } from "./commands/index.ts";
 export type { ResolvedCommandDefinition } from "./commands/index.ts";
 export {
+  getConfiguredAgentNames,
+  getConfiguredCommandNames,
+  getConfiguredToolNames,
   getConfiguredToolName,
   getEnabledToolNames,
   loadKompassConfig,
@@ -10,6 +13,8 @@ export {
 } from "./lib/config.ts";
 export type {
   AgentDefinition,
+  AgentName,
+  CommandName,
   KompassConfig,
   MergedKompassConfig,
   ToolName,

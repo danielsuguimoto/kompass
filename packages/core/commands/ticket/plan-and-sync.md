@@ -32,7 +32,7 @@ $ARGUMENTS
 ### Load Planning Context
 
 - If `<ticket-url>` is defined:
-<%~ include("@load-ticket", { source: "<ticket-url>", result: "<planning-context>", comments: true }) %>
+<%~ include("@load-ticket", { config: it.config, source: "<ticket-url>", result: "<planning-context>", comments: true }) %>
 - Otherwise, treat the relevant request and conversation context as `<planning-context>`
 - If `<planning-context>` is empty or missing, STOP and report that planning context could not be determined
 
@@ -67,7 +67,7 @@ $ARGUMENTS
 
 ### Sync Ticket
 
-- Use `ticket_sync` to store the plan in the ticket flow:
+- Use `<%= it.config.tools.ticket_sync.name %>` to store the plan in the ticket flow:
   - set `title` to `<plan-title>`
   - set `description` to `<plan-description>`
   - set `checklists` to two sections:
