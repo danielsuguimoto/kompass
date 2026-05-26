@@ -12,6 +12,7 @@ Load a ticket and its discussion, answer the user's question, and post that answ
 - Use `<additional-context>` to shape tone, depth, and focus for `<ticket-answer>`
 - Keep the posted answer grounded in the actual ticket discussion; do not invent missing facts
 - Ask only when the ticket source or question cannot be determined reliably
+- This command is strictly for understanding and replying; do NOT write, edit, or commit any code
 
 ## Workflow
 
@@ -42,6 +43,7 @@ $ARGUMENTS
 - Use `<ticket-context>` to understand the request, history, and open questions
 - Answer `<question>` using the ticket discussion plus any necessary repository context
 - Store the response to post as `<ticket-answer>`
+- Do NOT modify, create, or delete any files; do NOT run git commit or push
 
 ### Sync Ticket
 
