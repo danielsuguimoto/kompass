@@ -183,6 +183,27 @@ describe("changes_load e2e", () => {
     assert.match(result.commits[1].subject, /first commit/);
   });
 
+  test("branch comparison ignores base commits not in current branch", async () => {
+    const repo = await createRepo();
+    await commitFile(repo, "base.txt", "base\n", "init");
+    await git(repo, ["checkout", "-b", "feature"]);
+    await commitFile(repo, "feature.txt", "feature\n", "feature commit");
+    await git(repo, ["checkout", "main"]);
+    await commitFile(repo, "main-only.txt", "main only\n", "main commit");
+    await git(repo, ["checkout", "feature"]);
+
+    const result = await runChangesLoad(repo, {});
+
+    assert.ok(result.comparison.endsWith("main...HEAD"), `Expected comparison to end with main...HEAD, got: ${result.comparison}`);
+    assert.equal(result.branch, "feature");
+    assert.ok(result.commits);
+    assert.equal(result.commits.length, 1);
+    assert.match(result.commits[0].subject, /feature commit/);
+    assert.equal(result.files.length, 1);
+    assert.equal(result.files[0].status, "added");
+    assert.equal(result.files[0].path, "feature.txt");
+  });
+
   test("invalid depthHint is ignored during branch comparison", async () => {
     const repo = await createRepo();
     await commitFile(repo, "base.txt", "base\n", "init");

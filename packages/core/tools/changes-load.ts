@@ -79,15 +79,10 @@ export function createChangesLoadTool($: Shell) {
         }));
       }
 
-      const files = implicitWorkspaceMode
-        ? await $`git diff --find-renames --find-copies --name-status ${baseRef}`
-            .cwd(ctx.worktree)
-            .quiet()
-            .nothrow()
-        : await $`git diff --find-renames --find-copies --name-status ${baseRef}...${headRef}`
-            .cwd(ctx.worktree)
-            .quiet()
-            .nothrow();
+      const files = await $`git diff --find-renames --find-copies --name-status ${baseRef}...${headRef}`
+        .cwd(ctx.worktree)
+        .quiet()
+        .nothrow();
       const log = await $`git log --format=%H%x09%s ${baseRef}..${headRef}`
         .cwd(ctx.worktree)
         .quiet()
@@ -95,14 +90,12 @@ export function createChangesLoadTool($: Shell) {
       if (files.exitCode !== 0) {
         throw new Error(
           files.stderr.toString() ||
-            `Failed to diff ${implicitWorkspaceMode ? `${baseRef} against working tree` : `${baseRef}...${headRef}`}`,
+            `Failed to diff ${baseRef}...${headRef}`,
         );
       }
 
       const parsedFiles = parseNameStatus(files.text()).filter((file) => file.path);
-      const filesWithDiff = implicitWorkspaceMode
-        ? await loadWorkspaceFileDiffs($, ctx.worktree, baseRef, parsedFiles)
-        : await loadFileDiffs($, ctx.worktree, baseRef, headRef, parsedFiles);
+      const filesWithDiff = await loadFileDiffs($, ctx.worktree, baseRef, headRef, parsedFiles);
       const commits = parseCommitList(log.text());
 
       return stringifyJson({
